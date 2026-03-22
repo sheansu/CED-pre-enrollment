@@ -344,6 +344,13 @@
     <div class="nav-item" onclick="showPanel('grades', this)">
       <span class="nav-dot"></span> Enter Grades
     </div>
+      <div class="nav-item" onclick="showPanel('advising', this)">
+        <span class="nav-dot"></span> Advising Queue
+        <span id="advisingCount" style="display:none; background:#c0392b; color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:auto;"></span>
+    </div>
+      <div class="nav-item" onclick="showPanel('notices', this)">
+        <span class="nav-dot"></span> Send Notice
+    </div>
   </nav>
   <div class="sidebar-footer">
     <button class="logout-btn" onclick="logout()">Sign Out</button>
@@ -407,7 +414,73 @@
         </div>
       </div>
     </div>
+          <!-- ADVISING QUEUE PANEL -->
+    <div class="panel" id="panel-advising">
+    <p class="section-label" style="margin-bottom: 1rem;">Students pending advising review</p>
+    <div class="table-card">
+    <div class="table-header">
+      <h3>Advising Queue</h3>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Student No.</th>
+          <th>Name</th>
+          <th>Course</th>
+          <th>Year</th>
+          <th>Submitted</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="advisingTableBody">
+        <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+      </tbody>
+    </table>
+    </div>
 
+    <div id="advisingSubjectSection" style="display:none; margin-top: 1.5rem;">
+    <div class="table-card">
+      <div class="table-header">
+        <h3 id="advisingSubjectTitle">Subjects</h3>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-save" id="approveBtn" onclick="approveAdvising()">Approve Enrollment</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Subject</th>
+            <th>Units</th>
+            <th>Type</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="advisingSubjectBody">
+        </tbody>
+      </table>
+    </div>
+    </div>
+    </div>
+
+    <!-- SEND NOTICE PANEL -->
+    <div class="panel" id="panel-notices">
+      <div style="background: var(--white); border: 1px solid var(--gray-100); border-radius: 8px; padding: 2rem; max-width: 500px;">
+        <p class="section-label" style="margin-bottom: 1rem;">Send a notice to a student</p>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; color:var(--maroon-dark);">Student Number</label>
+            <input type="text" id="notice-student-search" placeholder="Enter student number..." style="padding:10px 12px; font-family:inherit; font-size:13px; border:1px solid var(--gray-300); border-radius:4px; outline:none;"/>
+            </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; color:var(--maroon-dark);">Message</label>
+              <textarea id="notice-message" rows="4" placeholder="Type your notice here..." style="padding:10px 12px; font-family:inherit; font-size:13px; border:1px solid var(--gray-300); border-radius:4px; outline:none; resize:vertical;"></textarea>
+              </div>
+                <button class="btn-save" style="align-self:flex-start; padding: 10px 20px;" onclick="sendNotice()">Send Notice</button>
+                  <div id="notice-result" style="display:none; font-size:13px; padding:8px 12px; border-radius:4px;"></div>
+            </div>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -517,7 +590,9 @@ async function selectSubject(subjectId, label) {
     const sem = students[0]?.semester || '';
     document.getElementById('gradeSchoolYear').textContent = sy ? `${sy} — Semester ${sem}` : '';
 
-    document.getElementById('gradeTableBody').innerHTML = students.map(s => `
+    document.getElementById('gradeTableBody').innerHTML = students.map(s => {
+    const sType = s.subject_type || 'engineering';
+    return `
       <tr id="row-${s.id}">
         <td>${s.student_number}</td>
         <td>${s.last_name}, ${s.first_name}</td>
@@ -531,17 +606,18 @@ async function selectSubject(subjectId, label) {
         </td>
         <td>
           <input class="grade-input" type="number" id="input-${s.id}" 
-            min="1.0" max="5.0" step="0.25"
-            value="${s.grade !== null ? s.grade : ''}" 
-            placeholder="1.0–5.0"/>
+          min="1.0" max="4.0" step="0.25"
+          value="${s.grade !== null ? s.grade : ''}" 
+          placeholder="1.0–4.0"/>
         </td>
         <td>
-          <button class="btn-save" onclick="saveGrade(${s.id}, ${subjectId}, '${s.school_year}', ${s.semester})">
+          <button class="btn-save" onclick="saveGrade(${s.id}, ${subjectId}, '${s.school_year}', ${s.semester}, '${sType}')">
             Save
           </button>
         </td>
       </tr>
-    `).join('');
+    `;
+}).join('');
 
   } catch (err) {
     document.getElementById('gradeTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Could not load students.</td></tr>';
@@ -549,20 +625,20 @@ async function selectSubject(subjectId, label) {
 }
 
 // ── SAVE GRADE ─────────────────────────────────────────────
-async function saveGrade(studentId, subjectId, schoolYear, semester) {
+async function saveGrade(studentId, subjectId, schoolYear, semester, subjectType) {
   const input = document.getElementById(`input-${studentId}`);
   const grade = parseFloat(input.value);
 
-  if (isNaN(grade) || grade < 1.0 || grade > 5.0) {
-    showToast('Grade must be between 1.0 and 5.0', 'error');
+  if (isNaN(grade) || grade < 1.0 || grade > 4.0) {
+    showToast('Grade must be between 1.0 and 4.0', 'error');
     return;
-  }
+}
 
   try {
     const res = await fetch(`${API}/api/teachers/grade`, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({ student_id: studentId, subject_id: subjectId, grade, school_year: schoolYear, semester })
+      body: JSON.stringify({ student_id: studentId, subject_id: subjectId, grade, school_year: schoolYear, semester, subject_type: subjectType })
     });
 
     const data = await res.json();
@@ -583,12 +659,160 @@ async function saveGrade(studentId, subjectId, schoolYear, semester) {
   }
 }
 
+// ── ADVISING QUEUE ─────────────────────────────────────────
+let selectedRequestId = null;
+let selectedAdvisingStudentId = null;
+
+async function loadAdvisingQueue() {
+  try {
+    const res = await fetch(`${API}/api/teachers/advising-requests`, { headers: authHeaders() });
+    const requests = await res.json();
+
+    const countEl = document.getElementById('advisingCount');
+    if (requests.length > 0) {
+      countEl.textContent = requests.length;
+      countEl.style.display = 'inline';
+    }
+
+    const tbody = document.getElementById('advisingTableBody');
+    if (requests.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No pending advising requests.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = requests.map(r => `
+      <tr>
+        <td>${r.student_number}</td>
+        <td>${r.last_name}, ${r.first_name}</td>
+        <td>${r.course}</td>
+        <td>Year ${r.year_level}</td>
+        <td>${new Date(r.submitted_at).toLocaleDateString()}</td>
+        <td><button class="btn-save" onclick="viewAdvisingSubjects(${r.id}, ${r.student_id}, '${r.first_name} ${r.last_name}')">Review</button></td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function viewAdvisingSubjects(requestId, studentId, name) {
+  selectedRequestId = requestId;
+  selectedAdvisingStudentId = studentId;
+  document.getElementById('advisingSubjectTitle').textContent = name + ' — Submitted Subjects';
+  document.getElementById('advisingSubjectSection').style.display = 'block';
+  document.getElementById('advisingSubjectBody').innerHTML = '<tr><td colspan="5" class="empty-state">Loading...</td></tr>';
+
+  try {
+    const res = await fetch(`${API}/api/teachers/advising-requests/${studentId}/subjects`, { headers: authHeaders() });
+    const subjects = await res.json();
+
+    if (subjects.length === 0) {
+      document.getElementById('advisingSubjectBody').innerHTML = '<tr><td colspan="5" class="empty-state">No subjects found.</td></tr>';
+      return;
+    }
+
+    document.getElementById('advisingSubjectBody').innerHTML = subjects.map(s => `
+      <tr>
+        <td style="font-weight:500; color:var(--maroon);">${s.code}</td>
+        <td>${s.name}</td>
+        <td>${s.units}</td>
+        <td>${s.type}</td>
+        <td><span class="badge badge-none">${s.status.replace(/_/g, ' ')}</span></td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function approveAdvising() {
+  if (!selectedRequestId) return;
+  const btn = document.getElementById('approveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Approving...';
+
+  try {
+    const res = await fetch(`${API}/api/teachers/advising-requests/${selectedRequestId}/approve`, {
+      method: 'PATCH',
+      headers: authHeaders()
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast(data.message || 'Failed to approve.', 'error');
+      return;
+    }
+
+    showToast('Enrollment approved successfully.', 'success');
+    document.getElementById('advisingSubjectSection').style.display = 'none';
+    loadAdvisingQueue();
+  } catch (err) {
+    showToast('Cannot connect to server.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Approve Enrollment';
+  }
+}
+
+// ── SEND NOTICE ────────────────────────────────────────────
+async function sendNotice() {
+  const studentNumber = document.getElementById('notice-student-search').value.trim();
+  const message = document.getElementById('notice-message').value.trim();
+  const resultEl = document.getElementById('notice-result');
+  resultEl.style.display = 'none';
+
+  if (!studentNumber || !message) {
+    resultEl.textContent = 'Please enter a student number and message.';
+    resultEl.style.background = 'var(--error-bg)';
+    resultEl.style.color = 'var(--error)';
+    resultEl.style.display = 'block';
+    return;
+  }
+
+  // First find student by number
+  try {
+    const searchRes = await fetch(`${API}/api/students/search?query=${encodeURIComponent(studentNumber)}`, { headers: authHeaders() });
+    const students = await searchRes.json();
+
+    if (!students || students.length === 0) {
+      resultEl.textContent = 'Student not found.';
+      resultEl.style.background = 'var(--error-bg)';
+      resultEl.style.color = 'var(--error)';
+      resultEl.style.display = 'block';
+      return;
+    }
+
+    const student = students[0];
+
+    const res = await fetch(`${API}/api/teachers/send-notice`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ student_id: student.id, message })
+    });
+
+    const data = await res.json();
+
+    resultEl.textContent = data.message || 'Notice sent.';
+    resultEl.style.background = 'var(--success-bg)';
+    resultEl.style.color = 'var(--success)';
+    resultEl.style.display = 'block';
+
+    document.getElementById('notice-student-search').value = '';
+    document.getElementById('notice-message').value = '';
+
+  } catch (err) {
+    resultEl.textContent = 'Cannot connect to server.';
+    resultEl.style.display = 'block';
+  }
+}
+
 // ── INIT ───────────────────────────────────────────────────
 if (!getToken() || localStorage.getItem('role') !== 'teacher') {
   window.location.href = '/login.html';
 }
 
 loadTeacher();
+loadAdvisingQueue(); 
 </script>
 </body>
 </html>
