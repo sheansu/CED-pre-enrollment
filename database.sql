@@ -541,11 +541,11 @@ SHOW COLUMNS FROM students LIKE 'type';
 ALTER TABLE users MODIFY COLUMN role 
 ENUM('student','admin','business_office','teacher') NOT NULL;
 
-UPDATE users SET password = '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE username = 'admin';
-UPDATE users SET password = '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE username = 'busoff';
+UPDATE users SET password = '$2b$10$qtvX5nm4ixIW96Nx.qDFYuukdThXPxKhLlzC05L0g/ZNXtxgngf7i' WHERE username = 'admin';
+UPDATE users SET password = '$2b$10$qtvX5nm4ixIW96Nx.qDFYuukdThXPxKhLlzC05L0g/ZNXtxgngf7i' WHERE username = 'busoff';
 
 INSERT INTO users (username, password, role) VALUES 
-('teacher1', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'teacher');
+('teacher1', '$2b$10$qtvX5nm4ixIW96Nx.qDFYuukdThXPxKhLlzC05L0g/ZNXtxgngf7i', 'teacher');
 INSERT INTO teachers (user_id, first_name, last_name, email, department_id)
 VALUES (LAST_INSERT_ID(), 'Kar', 'Baring', 'karizzaabaring@su.edu.ph', 1);
 
