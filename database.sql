@@ -97,7 +97,7 @@ CREATE TABLE curriculum (
 CREATE TABLE subject_schedules (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     subject_id  INT NOT NULL,
-    day         ENUM('Mon','Tue','Wed','Thu','Fri','Sat') NOT NULL,
+    day         ENUM('Mon/Thu','Tue/Fri','Wed/Sat','Mon','Tue','Wed','Thu','Fri','Sat') NOT NULL,
     time_start  TIME NOT NULL,
     time_end    TIME NOT NULL,
     room        VARCHAR(50) DEFAULT NULL,
@@ -209,7 +209,7 @@ CREATE TABLE sections (
     teacher_id  INT DEFAULT NULL,
     section_code VARCHAR(10) NOT NULL,
     capacity    TINYINT NOT NULL DEFAULT 40,
-    day         ENUM('Mon','Tue','Wed','Thu','Fri','Sat') DEFAULT NULL,
+    day         ENUM('Mon/Thu','Tue/Fri','Wed/Sat','Mon','Tue','Wed','Thu','Fri','Sat') DEFAULT NULL,
     time_start  TIME DEFAULT NULL,
     time_end    TIME DEFAULT NULL,
     room        VARCHAR(50) DEFAULT NULL,
