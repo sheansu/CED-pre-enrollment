@@ -22,275 +22,106 @@
     --error-bg:    #fdf0ef;
     --warning:     #b45309;
     --warning-bg:  #fef9ee;
+    --info:        #1a56db;
+    --info-bg:     #e8f0fe;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--gray-50); color: var(--gray-700); min-height: 100vh; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--gray-50);
-    color: var(--gray-700);
-    min-height: 100vh;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0; left: 0;
-    width: 220px;
-    height: 100vh;
-    background: var(--maroon-dark);
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
-  }
-
-  .sidebar-brand {
-    padding: 1.5rem 1.25rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .sidebar-brand img {
-    height: 40px;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-
-  .sidebar-brand h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 13px;
-    color: #fff;
-    line-height: 1.3;
-    font-weight: 400;
-  }
-
-  .sidebar-brand p {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    margin-top: 2px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
+  .sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh; background: var(--maroon-dark); display: flex; flex-direction: column; z-index: 100; }
+  .sidebar-brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .sidebar-brand img { height: 40px; margin-bottom: 0.5rem; display: block; }
+  .sidebar-brand h2 { font-family: 'DM Serif Display', serif; font-size: 13px; color: #fff; line-height: 1.3; font-weight: 400; }
+  .sidebar-brand p { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase; }
   .sidebar-nav { flex: 1; padding: 1rem 0; }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 1.25rem;
-    font-size: 13px;
-    color: rgba(255,255,255,0.55);
-    cursor: pointer;
-    border-left: 3px solid transparent;
-    transition: all 0.15s;
-    user-select: none;
-  }
-
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; font-size: 13px; color: rgba(255,255,255,0.55); cursor: pointer; border-left: 3px solid transparent; transition: all 0.15s; user-select: none; }
   .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
   .nav-item.active { color: #fff; border-left-color: #e8c97a; background: rgba(255,255,255,0.07); }
   .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-
-  .sidebar-footer {
-    padding: 1rem 1.25rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .logout-btn {
-    width: 100%;
-    padding: 8px;
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.6);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .logout-btn { width: 100%; padding: 8px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; transition: all 0.15s; }
   .logout-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
   .main { margin-left: 220px; min-height: 100vh; display: flex; flex-direction: column; }
-
-  .topbar {
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-100);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .topbar h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    color: var(--maroon-dark);
-    font-weight: 400;
-  }
-
+  .topbar { background: var(--white); border-bottom: 1px solid var(--gray-100); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+  .topbar h1 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--maroon-dark); font-weight: 400; }
   .topbar-user { font-size: 12px; color: var(--gray-500); }
-
   .content { padding: 2rem; flex: 1; }
-
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* PROFILE CARD */
-  .profile-card {
-    background: var(--white);
-    border: 1px solid var(--gray-100);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
+  .status-banner { border-radius: 8px; padding: 12px 16px; margin-bottom: 1.5rem; font-size: 13px; display: flex; align-items: center; gap: 10px; border-left: 4px solid; }
+  .status-pending  { background: var(--error-bg);   border-color: var(--error);   color: var(--error); }
+  .status-ok       { background: var(--warning-bg);  border-color: var(--warning); color: var(--warning); }
+  .status-enrolled { background: var(--success-bg);  border-color: var(--success); color: var(--success); }
+  .status-info     { background: var(--info-bg);     border-color: var(--info);    color: var(--info); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-  .profile-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--maroon);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: #fff;
-    flex-shrink: 0;
-  }
-
-  .profile-info h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--maroon-dark);
-    font-weight: 400;
-    margin-bottom: 4px;
-  }
-
-  .profile-info p {
-    font-size: 13px;
-    color: var(--gray-500);
-    margin-bottom: 2px;
-  }
-
+  .profile-card { background: var(--white); border: 1px solid var(--gray-100); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+  .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--maroon); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: #fff; flex-shrink: 0; }
+  .profile-info h2 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--maroon-dark); font-weight: 400; margin-bottom: 4px; }
+  .profile-info p { font-size: 13px; color: var(--gray-500); margin-bottom: 2px; }
   .profile-badges { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
 
-  .badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 8px;
-    border-radius: 10px;
-  }
-
-  .badge-ok      { background: var(--success-bg); color: var(--success); }
-  .badge-notok   { background: var(--error-bg);   color: var(--error); }
-  .badge-regular { background: var(--success-bg); color: var(--success); }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 10px; }
+  .badge-ok        { background: var(--success-bg); color: var(--success); }
+  .badge-notok     { background: var(--error-bg);   color: var(--error); }
+  .badge-regular   { background: var(--success-bg); color: var(--success); }
   .badge-irregular { background: var(--warning-bg); color: var(--warning); }
-  .badge-new     { background: #e8f0fe; color: #1a56db; }
-  .badge-old     { background: #fef3c7; color: #92400e; }
-  .badge-gray    { background: var(--gray-100); color: var(--gray-500); }
+  .badge-new       { background: var(--info-bg);    color: var(--info); }
+  .badge-old       { background: #fef3c7;            color: #92400e; }
+  .badge-gray      { background: var(--gray-100);    color: var(--gray-500); }
+  .badge-enrolled  { background: var(--success-bg); color: var(--success); }
+  .badge-pre       { background: var(--info-bg);    color: var(--info); }
+  .badge-submitted { background: var(--warning-bg); color: var(--warning); }
 
-  /* NOTICES */
-  .notice-card {
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 10px;
-    border-left: 4px solid;
-    font-size: 13px;
-  }
+  .table-card { background: var(--white); border: 1px solid var(--gray-100); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+  .table-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+  .table-header h3 { font-size: 14px; font-weight: 500; color: var(--maroon-dark); }
+  .table-header span { font-size: 12px; color: var(--gray-500); }
 
-  .notice-warning { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
-  .notice-error   { background: var(--error-bg);   border-color: var(--error);   color: var(--error); }
-  .notice-info    { background: #e8f0fe;            border-color: #1a56db;        color: #1a56db; }
-
-  .notice-type {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 4px;
-  }
-
-  /* SUBJECTS TABLE */
-  .table-card {
-    background: var(--white);
-    border: 1px solid var(--gray-100);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .table-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--gray-100);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .table-header h3 {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--maroon-dark);
-  }
-
-  .units-badge {
-    font-size: 12px;
-    color: var(--gray-500);
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  thead th {
-    padding: 10px 1.5rem;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--gray-500);
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-100);
-  }
-
-  tbody tr {
-    border-bottom: 1px solid var(--gray-100);
-    transition: background 0.1s;
-  }
-
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { padding: 10px 1.5rem; text-align: left; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--gray-500); background: var(--gray-50); border-bottom: 1px solid var(--gray-100); }
+  tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--maroon-bg); }
-  tbody td { padding: 12px 1.5rem; color: var(--gray-700); }
-
+  tbody td { padding: 10px 1.5rem; color: var(--gray-700); }
   .subject-code { font-weight: 500; color: var(--maroon); }
 
-  .empty-state {
-    text-align: center;
-    padding: 3rem;
-    color: var(--gray-500);
-    font-size: 14px;
-  }
+  .ge-box { background: var(--white); border: 1px solid var(--gray-100); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .ge-box h3 { font-size: 14px; font-weight: 500; color: var(--maroon-dark); margin-bottom: 4px; }
+  .ge-box p { font-size: 12px; color: var(--gray-500); margin-bottom: 1rem; }
+  .ge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .ge-item { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 6px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ge-item-info { flex: 1; }
+  .ge-item-code { font-size: 12px; font-weight: 500; color: var(--maroon); }
+  .ge-item-name { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .btn-add-ge { padding: 4px 10px; font-family: 'DM Sans', sans-serif; font-size: 11px; background: var(--maroon); color: #fff; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+  .btn-add-ge:hover { background: var(--maroon-dark); }
+  .btn-add-ge:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .section-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--gray-500);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-bottom: 10px;
-  }
+  .btn-primary { padding: 10px 20px; background: var(--maroon); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; border: none; border-radius: 4px; cursor: pointer; }
+  .btn-primary:hover { background: var(--maroon-dark); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-remove { padding: 3px 8px; font-family: 'DM Sans', sans-serif; font-size: 11px; background: var(--error-bg); color: var(--error); border: 1px solid var(--error); border-radius: 4px; cursor: pointer; }
+  .btn-remove:hover { background: var(--error); color: #fff; }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .notice-card { border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; border-left: 4px solid; font-size: 13px; }
+  .notice-warning { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+  .notice-type { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
 
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+  .contact-card { background: var(--white); border: 1px solid var(--gray-100); border-radius: 8px; padding: 1.25rem; }
+  .contact-name { font-size: 14px; font-weight: 500; color: var(--maroon-dark); margin-bottom: 4px; }
+  .contact-role { font-size: 12px; color: var(--gray-500); margin-bottom: 8px; }
+  .contact-info { font-size: 12px; color: var(--gray-700); line-height: 1.7; }
+  .contact-email { color: var(--info); }
+
+  .empty-state { text-align: center; padding: 3rem; color: var(--gray-500); font-size: 14px; }
+  .section-label { font-size: 12px; font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .content { animation: fadeIn 0.3s ease both; }
 </style>
 </head>
@@ -303,13 +134,13 @@
     <p>Student Portal</p>
   </div>
   <nav class="sidebar-nav">
-    <div class="nav-item active" onclick="showPanel('overview', this)">
-      <span class="nav-dot"></span> My Enrollment
-    </div>
+    <div class="nav-item active" onclick="showPanel('enrollment', this)"><span class="nav-dot"></span> My Enrollment</div>
+    <div class="nav-item" onclick="showPanel('grades', this)"><span class="nav-dot"></span> My Grades</div>
     <div class="nav-item" onclick="showPanel('notices', this)">
       <span class="nav-dot"></span> Notices
       <span id="noticeCount" style="display:none; background:#c0392b; color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:auto;"></span>
     </div>
+    <div class="nav-item" onclick="showPanel('contacts', this)"><span class="nav-dot"></span> Contacts</div>
   </nav>
   <div class="sidebar-footer">
     <button class="logout-btn" onclick="logout()">Sign Out</button>
@@ -324,10 +155,10 @@
 
   <div class="content">
 
-    <!-- OVERVIEW PANEL -->
-    <div class="panel active" id="panel-overview">
+    <div class="panel active" id="panel-enrollment">
+      <div id="statusBanner"></div>
 
-      <div class="profile-card" id="profileCard">
+      <div class="profile-card">
         <div class="profile-avatar" id="profileAvatar">—</div>
         <div class="profile-info">
           <h2 id="profileName">Loading...</h2>
@@ -337,35 +168,58 @@
         </div>
       </div>
 
-      <div style="margin-bottom: 1.5rem;" id="noticesInline"></div>
-
       <div class="table-card">
         <div class="table-header">
-          <h3>Enrolled Subjects</h3>
-          <span class="units-badge" id="totalUnits"></span>
+          <h3>My Subjects</h3>
+          <span id="totalUnits"></span>
         </div>
         <table>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Subject</th>
-              <th>Units</th>
-              <th>Type</th>
-              <th>Status</th>
+              <th>Code</th><th>Subject</th><th>Section</th><th>Units</th>
+              <th>Day</th><th>Time</th><th>Room</th><th>Status</th><th></th>
             </tr>
           </thead>
           <tbody id="subjectTableBody">
-            <tr><td colspan="5" class="empty-state">Loading subjects...</td></tr>
+            <tr><td colspan="9" class="empty-state">Loading subjects...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="geBox" style="display:none;">
+        <div class="ge-box">
+          <h3>Available GE Subjects</h3>
+          <p>These GE subjects have no prerequisites. You may add them to your enrollment.</p>
+          <div class="ge-grid" id="geGrid"></div>
+        </div>
+      </div>
+
+      <div id="actionButtons" style="display:none; margin-top: 1rem; gap:10px; flex-wrap:wrap;">
+        <button class="btn-primary" id="submitAdvisingBtn" onclick="beginEnrollment()">Begin Enrollment</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-grades">
+      <div class="table-card">
+        <div class="table-header"><h3>My Grade History</h3></div>
+        <table>
+          <thead>
+            <tr><th>School Year</th><th>Sem</th><th>Code</th><th>Subject</th><th>Units</th><th>Grade</th><th>Result</th></tr>
+          </thead>
+          <tbody id="gradesTableBody">
+            <tr><td colspan="7" class="empty-state">Loading grades...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- NOTICES PANEL -->
     <div class="panel" id="panel-notices">
-      <div id="noticesList">
-        <div class="empty-state">Loading notices...</div>
-      </div>
+      <div id="noticesList"><div class="empty-state">Loading notices...</div></div>
+    </div>
+
+    <div class="panel" id="panel-contacts">
+      <p class="section-label" style="margin-bottom: 1rem;">CED Faculty and Staff</p>
+      <div class="contact-grid" id="contactGrid"><div class="empty-state">Loading contacts...</div></div>
     </div>
 
   </div>
@@ -373,93 +227,114 @@
 
 <script>
 const API = 'http://localhost:5000';
+let studentData = null;
 
 function getToken() { return localStorage.getItem('token'); }
-
-function authHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${getToken()}`
-  };
-}
-
-function logout() {
-  localStorage.clear();
-  window.location.href = '/login.html';
-}
+function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }; }
+function logout() { localStorage.clear(); window.location.href = '/login.html'; }
 
 function showPanel(name, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   el.classList.add('active');
+  if (name === 'grades') loadGrades();
+  if (name === 'contacts') loadContacts();
 }
 
-// ── LOAD STUDENT DATA ──────────────────────────────────────
+function renderStatusBanner(student, subjects) {
+  const banner = document.getElementById('statusBanner');
+  const hasEnrolled = subjects.some(s => s.status === 'officially_enrolled' || s.status === 'auto_enrolled');
+  const hasSubmitted = subjects.some(s => s.status === 'submitted_for_advising');
+  const hasPreEnlisted = subjects.some(s => s.status === 'pre_enlisted');
+
+  if (!student.ok_to_enroll) {
+    banner.innerHTML = `<div class="status-banner status-pending"><div class="status-dot"></div><strong>Pending Payment</strong> — Please settle your balance at the Business Office.</div>`;
+  } else if (hasEnrolled) {
+    banner.innerHTML = `<div class="status-banner status-enrolled"><div class="status-dot"></div><strong>Officially Enrolled</strong> — Your enrollment has been approved by your advisor.</div>`;
+  } else if (hasSubmitted) {
+    banner.innerHTML = `<div class="status-banner status-ok"><div class="status-dot"></div><strong>Submitted for Advising</strong> — Pending review by your advisor.</div>`;
+  } else if (hasPreEnlisted) {
+    banner.innerHTML = `<div class="status-banner status-info"><div class="status-dot"></div><strong>Ok to Enroll</strong> — Review your subjects below, add GEs if needed, then submit for advising.</div>`;
+  } else if (student.ok_to_enroll) {
+    banner.innerHTML = `<div class="status-banner status-ok"><div class="status-dot"></div><strong>Ok to Enroll</strong> — Click Begin Enrollment to start.</div>`;
+  }
+}
+
 async function loadDashboard() {
   try {
     const res = await fetch(`${API}/api/students/me`, { headers: authHeaders() });
     if (res.status === 401 || res.status === 403) { logout(); return; }
-
     const data = await res.json();
     const { student, subjects, notices } = data;
+    studentData = student;
 
-    // Profile
     const initials = student.first_name[0] + student.last_name[0];
     document.getElementById('profileAvatar').textContent = initials.toUpperCase();
     document.getElementById('profileName').textContent = `${student.first_name} ${student.last_name}`;
     document.getElementById('profileCourse').textContent = `${student.course} — Year ${student.year_level}`;
     document.getElementById('profileNumber').textContent = student.student_number;
-    document.getElementById('topbarUser').textContent = student.first_name + ' ' + student.last_name;
+    document.getElementById('topbarUser').textContent = `${student.first_name} ${student.last_name}`;
 
-    // Badges
-    const badgesEl = document.getElementById('profileBadges');
-    badgesEl.innerHTML = `
+    document.getElementById('profileBadges').innerHTML = `
       <span class="badge badge-${student.type}">${student.type.charAt(0).toUpperCase() + student.type.slice(1)}</span>
-      <span class="badge ${student.ok_to_enroll ? 'badge-ok' : 'badge-notok'}">${student.ok_to_enroll ? 'Cleared for Enrollment' : 'Payment Pending'}</span>
+      <span class="badge ${student.ok_to_enroll ? 'badge-ok' : 'badge-notok'}">${student.ok_to_enroll ? 'Cleared' : 'Payment Pending'}</span>
       ${student.status ? `<span class="badge badge-${student.status}">${student.status}</span>` : ''}
     `;
 
-    // Subjects
+    renderStatusBanner(student, subjects);
+
     const tbody = document.getElementById('subjectTableBody');
     if (subjects.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No subjects enrolled yet.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No subjects enlisted yet.</td></tr>`;
     } else {
       tbody.innerHTML = subjects.map(s => `
         <tr>
           <td class="subject-code">${s.code}</td>
           <td>${s.name}</td>
+          <td>${s.section_code || '—'}</td>
           <td>${s.units}</td>
-          <td><span class="badge badge-gray">${s.type}</span></td>
-          <td><span class="badge badge-${s.status === 'auto_enrolled' ? 'new' : 'old'}">${s.status.replace(/_/g, ' ')}</span></td>
+          <td>${s.day || '—'}</td>
+          <td>${s.time_start ? s.time_start.substring(0,5) + ' – ' + s.time_end.substring(0,5) : '—'}</td>
+          <td>${s.room || '—'}</td>
+          <td><span class="badge badge-${s.status === 'officially_enrolled' ? 'enrolled' : s.status === 'submitted_for_advising' ? 'submitted' : s.status === 'pre_enlisted' ? 'pre' : 'gray'}">${s.status.replace(/_/g, ' ')}</span></td>
+          <td>${s.status === 'pre_enlisted' && student.type !== 'new' ? `<button class="btn-remove" onclick="removeSubject(${s.enrollment_id})">Remove</button>` : ''}</td>
         </tr>
       `).join('');
-
       const total = subjects.reduce((sum, s) => sum + s.units, 0);
       document.getElementById('totalUnits').textContent = `Total: ${total} units`;
     }
 
-    // Notices inline on overview
-    const noticesInline = document.getElementById('noticesInline');
-    if (notices.length > 0) {
-      noticesInline.innerHTML = notices.map(n => `
-        <div class="notice-card notice-warning">
-          <div class="notice-type">${n.type.replace(/_/g, ' ')}</div>
-          <div>${n.message}</div>
-        </div>
-      `).join('');
+    const actionBtns = document.getElementById('actionButtons');
+    const btn = document.getElementById('submitAdvisingBtn');
+    const hasEnrolled  = subjects.some(s => s.status === 'officially_enrolled');
+    const hasSubmitted = subjects.some(s => s.status === 'submitted_for_advising');
+    const hasPreEnlisted = subjects.some(s => s.status === 'pre_enlisted');
 
-      // Update sidebar notice count
-      const countEl = document.getElementById('noticeCount');
-      countEl.textContent = notices.length;
-      countEl.style.display = 'inline';
+    if (student.type === 'old' && student.ok_to_enroll) {
+      actionBtns.style.display = 'flex';
+      if (hasEnrolled) {
+        actionBtns.style.display = 'none';
+      } else if (hasSubmitted) {
+        btn.disabled = true;
+        btn.textContent = 'Submitted — Awaiting Advisor Review';
+      } else if (hasPreEnlisted) {
+        btn.disabled = false;
+        btn.textContent = 'Submit for Advising';
+        btn.onclick = submitForAdvising;
+        loadGESubjects();
+        document.getElementById('geBox').style.display = 'block';
+      } else {
+        btn.textContent = 'Begin Enrollment';
+        btn.onclick = beginEnrollment;
+      }
     }
 
-    // Notices panel
     const noticesList = document.getElementById('noticesList');
-    if (notices.length === 0) {
-      noticesList.innerHTML = `<div class="empty-state">No pending notices.</div>`;
-    } else {
+    const countEl = document.getElementById('noticeCount');
+    if (notices.length > 0) {
+      countEl.textContent = notices.length;
+      countEl.style.display = 'inline';
       noticesList.innerHTML = notices.map(n => `
         <div class="notice-card notice-warning">
           <div class="notice-type">${n.type.replace(/_/g, ' ')}</div>
@@ -467,18 +342,115 @@ async function loadDashboard() {
           <div style="font-size:11px; color:var(--gray-500); margin-top:6px;">${new Date(n.created_at).toLocaleDateString()}</div>
         </div>
       `).join('');
+    } else {
+      noticesList.innerHTML = '<div class="empty-state">No pending notices.</div>';
     }
-
-  } catch (err) {
-    console.error(err);
-  }
+  } catch (err) { console.error(err); }
 }
 
-// ── INIT ───────────────────────────────────────────────────
-if (!getToken() || localStorage.getItem('role') !== 'student') {
-  window.location.href = '/login.html';
+async function beginEnrollment() {
+  const btn = document.getElementById('submitAdvisingBtn');
+  btn.disabled = true;
+  btn.textContent = 'Processing...';
+  try {
+    const res = await fetch(`${API}/api/students/enroll-old`, { method: 'POST', headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) { alert(data.message || 'Enrollment failed.'); btn.disabled = false; btn.textContent = 'Begin Enrollment'; return; }
+    loadDashboard();
+  } catch (err) { alert('Cannot connect to server.'); btn.disabled = false; btn.textContent = 'Begin Enrollment'; }
 }
 
+async function loadGESubjects() {
+  try {
+    const res = await fetch(`${API}/api/students/ge-subjects`, { headers: authHeaders() });
+    const ges = await res.json();
+    if (ges.length === 0) return;
+    document.getElementById('geGrid').innerHTML = ges.map(g => `
+      <div class="ge-item">
+        <div class="ge-item-info">
+          <div class="ge-item-code">${g.code}</div>
+          <div class="ge-item-name">${g.name}</div>
+        </div>
+        <button class="btn-add-ge" id="ge-btn-${g.id}" onclick="addGE(${g.id}, this)">${g.units} units — Add</button>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+async function addGE(subjectId, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
+  try {
+    const res = await fetch(`${API}/api/students/add-ge`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ subject_id: subjectId }) });
+    const data = await res.json();
+    if (!res.ok) { alert(data.message); btn.disabled = false; btn.textContent = 'Add'; return; }
+    btn.textContent = 'Added';
+    btn.style.background = 'var(--success)';
+    loadDashboard();
+  } catch (err) { btn.disabled = false; btn.textContent = 'Add'; }
+}
+
+async function removeSubject(enrollmentId) {
+  if (!confirm('Remove this subject?')) return;
+  try {
+    const res = await fetch(`${API}/api/students/remove-subject/${enrollmentId}`, { method: 'DELETE', headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) { alert(data.message); return; }
+    loadDashboard();
+  } catch (err) { alert('Cannot connect to server.'); }
+}
+
+async function submitForAdvising() {
+  if (!confirm('Submit subjects for advisor review? You cannot make changes after this.')) return;
+  const btn = document.getElementById('submitAdvisingBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  try {
+    const res = await fetch(`${API}/api/students/submit-advising`, { method: 'POST', headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) { alert(data.message || 'Submission failed.'); btn.disabled = false; btn.textContent = 'Submit for Advising'; return; }
+    alert(data.message);
+    loadDashboard();
+  } catch (err) { alert('Cannot connect to server.'); btn.disabled = false; btn.textContent = 'Submit for Advising'; }
+}
+
+async function loadGrades() {
+  try {
+    const res = await fetch(`${API}/api/students/my-grades`, { headers: authHeaders() });
+    const grades = await res.json();
+    const tbody = document.getElementById('gradesTableBody');
+    if (grades.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No grade records found.</td></tr>'; return; }
+    tbody.innerHTML = grades.map(g => `
+      <tr>
+        <td>${g.school_year}</td><td>${g.semester}</td>
+        <td class="subject-code">${g.code}</td><td>${g.name}</td><td>${g.units}</td>
+        <td>${g.grade !== null ? g.grade : '—'}</td>
+        <td>${g.grade !== null ? `<span class="badge ${g.passed ? 'badge-ok' : 'badge-notok'}">${g.passed ? 'Passed' : 'Failed'}</span>` : '<span class="badge badge-gray">Pending</span>'}</td>
+      </tr>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+async function loadContacts() {
+  try {
+    const res = await fetch(`${API}/api/students/contacts`, { headers: authHeaders() });
+    const contacts = await res.json();
+    const grid = document.getElementById('contactGrid');
+    if (contacts.length === 0) { grid.innerHTML = '<div class="empty-state">No contacts found.</div>'; return; }
+    grid.innerHTML = contacts.map(c => `
+      <div class="contact-card">
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-role">${c.role}${c.department_name ? ' — ' + c.department_name : ''}</div>
+        <div class="contact-info">
+          ${c.email ? `<div class="contact-email">${c.email}</div>` : ''}
+          ${c.phone ? `<div>${c.phone}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch (err) { console.error(err); }
+}
+
+if (!getToken() || localStorage.getItem('role') !== 'student') { window.location.href = '/login.html'; }
 loadDashboard();
 </script>
 </body>

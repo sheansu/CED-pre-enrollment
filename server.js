@@ -18,8 +18,19 @@ app.use('/api/auth', roleRoutes);
 const teacherRoutes = require('./routes/teachers');
 app.use('/api/teachers', teacherRoutes);
 
+// NEW: admin-specific routes
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
+
 app.get('/', (req, res) => {
     res.send('CED Pre-enrollment System API Running');
+});
+
+app.get('/test-db', (req, res) => {
+    db.query('SELECT 1', (err, result) => {
+        if (err) return res.status(500).send('DB ERROR');
+        res.send('DB WORKING');
+    });
 });
 
 app.listen(5000, () => {

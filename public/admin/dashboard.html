@@ -23,6 +23,8 @@
     --warning-bg:  #fef9ee;
     --error:       #c0392b;
     --error-bg:    #fdf0ef;
+    --info:        #1a56db;
+    --info-bg:     #e8f0fe;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,421 +36,335 @@
     min-height: 100vh;
   }
 
-  /* SIDEBAR */
+  /* ── SIDEBAR ── */
   .sidebar {
     position: fixed;
     top: 0; left: 0;
-    width: 220px;
+    width: 230px;
     height: 100vh;
     background: var(--maroon-dark);
     display: flex;
     flex-direction: column;
-    padding: 0;
     z-index: 100;
+    overflow-y: auto;
   }
 
   .sidebar-brand {
     padding: 1.5rem 1.25rem;
     border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
   }
 
-  .sidebar-brand img {
-    height: 40px;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
+  .sidebar-brand img { height: 40px; margin-bottom: 0.5rem; display: block; }
 
   .sidebar-brand h2 {
     font-family: 'DM Serif Display', serif;
-    font-size: 13px;
-    color: #fff;
-    line-height: 1.3;
-    font-weight: 400;
+    font-size: 13px; color: #fff; line-height: 1.3; font-weight: 400;
   }
 
   .sidebar-brand p {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    margin-top: 2px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 10px; color: rgba(255,255,255,0.4);
+    margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;
   }
 
-  .sidebar-nav {
-    flex: 1;
-    padding: 1rem 0;
+  .sidebar-nav { flex: 1; padding: 0.75rem 0; }
+
+  .nav-section-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.25);
+    padding: 1rem 1.25rem 0.4rem;
   }
 
   .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 1.25rem;
-    font-size: 13px;
-    color: rgba(255,255,255,0.55);
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 1.25rem;
+    font-size: 13px; color: rgba(255,255,255,0.55);
     cursor: pointer;
     border-left: 3px solid transparent;
-    transition: all 0.15s;
-    user-select: none;
+    transition: all 0.15s; user-select: none;
   }
 
   .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
-
-  .nav-item.active {
-    color: #fff;
-    border-left-color: #e8c97a;
-    background: rgba(255,255,255,0.07);
-  }
-
-  .nav-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-  }
+  .nav-item.active { color: #fff; border-left-color: #e8c97a; background: rgba(255,255,255,0.07); }
+  .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
   .sidebar-footer {
     padding: 1rem 1.25rem;
     border-top: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
   }
 
   .logout-btn {
-    width: 100%;
-    padding: 8px;
+    width: 100%; padding: 8px;
     background: rgba(255,255,255,0.07);
     color: rgba(255,255,255,0.6);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+    cursor: pointer; transition: all 0.15s;
   }
-
   .logout-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-  /* MAIN */
-  .main {
-    margin-left: 220px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+  /* ── MAIN ── */
+  .main { margin-left: 230px; min-height: 100vh; display: flex; flex-direction: column; }
 
   .topbar {
     background: var(--white);
     border-bottom: 1px solid var(--gray-100);
     padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
   }
 
   .topbar h1 {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    color: var(--maroon-dark);
-    font-weight: 400;
+    font-size: 1.3rem; color: var(--maroon-dark); font-weight: 400;
   }
 
-  .topbar-user {
-    font-size: 12px;
-    color: var(--gray-500);
-  }
+  .topbar-user { font-size: 12px; color: var(--gray-500); }
+  .content { padding: 2rem; flex: 1; }
 
-  .content {
-    padding: 2rem;
-    flex: 1;
-  }
-
-  /* PANELS */
+  /* ── PANELS ── */
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* STATS ROW */
+  /* ── STATS ── */
   .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1rem; margin-bottom: 2rem;
   }
 
   .stat-card {
     background: var(--white);
     border: 1px solid var(--gray-100);
-    border-radius: 8px;
-    padding: 1.25rem;
+    border-radius: 8px; padding: 1.25rem;
   }
 
   .stat-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--gray-500);
-    margin-bottom: 6px;
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--gray-500); margin-bottom: 6px;
   }
 
-  .stat-value {
-    font-size: 2rem;
-    font-weight: 500;
-    color: var(--maroon);
-  }
+  .stat-value { font-size: 2rem; font-weight: 500; color: var(--maroon); }
 
-  /* TABLE */
+  /* ── TABLE ── */
   .table-card {
     background: var(--white);
     border: 1px solid var(--gray-100);
-    border-radius: 8px;
-    overflow: hidden;
+    border-radius: 8px; overflow: hidden;
   }
 
   .table-header {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--gray-100);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.75rem;
   }
 
-  .table-header h3 {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--maroon-dark);
-  }
+  .table-header h3 { font-size: 14px; font-weight: 500; color: var(--maroon-dark); }
+
+  .table-header-actions { display: flex; gap: 8px; align-items: center; }
 
   .search-input {
-    padding: 7px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    border: 1px solid var(--gray-300);
-    border-radius: 4px;
-    outline: none;
-    width: 200px;
-    transition: border-color 0.2s;
+    padding: 7px 12px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; border: 1px solid var(--gray-300);
+    border-radius: 4px; outline: none; width: 200px; transition: border-color 0.2s;
   }
-
   .search-input:focus { border-color: var(--maroon); }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
   thead th {
-    padding: 10px 1.5rem;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--gray-500);
-    background: var(--gray-50);
+    padding: 10px 1rem;
+    text-align: left; font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--gray-500); background: var(--gray-50);
     border-bottom: 1px solid var(--gray-100);
   }
 
-  tbody tr {
-    border-bottom: 1px solid var(--gray-100);
-    transition: background 0.1s;
-  }
-
+  tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--maroon-bg); }
+  tbody td { padding: 10px 1rem; color: var(--gray-700); }
 
-  tbody td {
-    padding: 12px 1.5rem;
-    color: var(--gray-700);
-  }
-
+  /* ── BADGES ── */
   .badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 8px;
-    border-radius: 10px;
+    display: inline-block; font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: 10px;
   }
-
-  .badge-new     { background: #e8f0fe; color: #1a56db; }
-  .badge-old     { background: #fef3c7; color: #92400e; }
-  .badge-regular { background: var(--success-bg); color: var(--success); }
+  .badge-new       { background: var(--info-bg); color: var(--info); }
+  .badge-old       { background: #fef3c7; color: #92400e; }
+  .badge-shiftee   { background: #f3e8ff; color: #7c3aed; }
+  .badge-regular   { background: var(--success-bg); color: var(--success); }
   .badge-irregular { background: var(--warning-bg); color: var(--warning); }
-  .badge-ok      { background: var(--success-bg); color: var(--success); }
-  .badge-notok   { background: var(--error-bg); color: var(--error); }
+  .badge-ok        { background: var(--success-bg); color: var(--success); }
+  .badge-notok     { background: var(--error-bg); color: var(--error); }
+  .badge-gray      { background: var(--gray-100); color: var(--gray-500); }
 
+  /* ── BUTTONS ── */
   .btn-action {
-    padding: 5px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    background: var(--maroon);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
+    padding: 5px 10px; font-family: 'DM Sans', sans-serif; font-size: 12px;
+    background: var(--maroon); color: #fff; border: none; border-radius: 4px;
+    cursor: pointer; transition: background 0.15s;
   }
-
   .btn-action:hover { background: var(--maroon-dark); }
 
-  /* FORM */
+  .btn-action.secondary {
+    background: var(--white); color: var(--maroon);
+    border: 1px solid var(--maroon);
+  }
+  .btn-action.secondary:hover { background: var(--maroon-bg); }
+
+  .btn-action.danger {
+    background: var(--error-bg); color: var(--error);
+    border: 1px solid var(--error);
+  }
+  .btn-action.danger:hover { background: var(--error); color: #fff; }
+
+  /* ── FORM ── */
   .form-card {
-    background: var(--white);
-    border: 1px solid var(--gray-100);
-    border-radius: 8px;
-    padding: 2rem;
-    max-width: 640px;
+    background: var(--white); border: 1px solid var(--gray-100);
+    border-radius: 8px; padding: 2rem; max-width: 680px;
   }
 
   .form-card h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.1rem;
-    color: var(--maroon-dark);
-    font-weight: 400;
-    margin-bottom: 1.5rem;
+    font-family: 'DM Serif Display', serif; font-size: 1.1rem;
+    color: var(--maroon-dark); font-weight: 400; margin-bottom: 1.5rem;
   }
 
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
+  .form-group.third { grid-column: span 1; }
 
   .form-group label {
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--maroon-dark);
+    font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--maroon-dark);
   }
 
   .form-group input,
-  .form-group select {
-    padding: 10px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    border: 1px solid var(--gray-300);
-    border-radius: 4px;
-    outline: none;
-    color: var(--gray-700);
-    transition: border-color 0.2s;
-    background: white;
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    border: 1px solid var(--gray-300); border-radius: 4px; outline: none;
+    color: var(--gray-700); transition: border-color 0.2s; background: white;
   }
 
   .form-group input:focus,
-  .form-group select:focus { border-color: var(--maroon); }
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--maroon); }
 
-  .form-actions { margin-top: 1.5rem; }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .form-actions { margin-top: 1.5rem; display: flex; gap: 10px; }
 
   .btn-primary {
-    padding: 11px 24px;
-    background: var(--maroon);
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
+    padding: 11px 24px; background: var(--maroon); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    border: none; border-radius: 4px; cursor: pointer; transition: background 0.15s;
   }
-
   .btn-primary:hover { background: var(--maroon-dark); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* ALERT */
-  .alert {
-    display: none;
-    padding: 12px 16px;
-    border-radius: 4px;
-    font-size: 13px;
-    margin-top: 1rem;
-    border-left: 3px solid;
+  .btn-secondary {
+    padding: 11px 24px; background: var(--white); color: var(--maroon);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    border: 1px solid var(--maroon); border-radius: 4px; cursor: pointer;
   }
 
+  /* ── ALERTS ── */
+  .alert {
+    display: none; padding: 12px 16px; border-radius: 4px;
+    font-size: 13px; margin-top: 1rem; border-left: 3px solid;
+  }
   .alert-success { background: var(--success-bg); color: var(--success); border-color: var(--success); }
   .alert-error   { background: var(--error-bg);   color: var(--error);   border-color: var(--error); }
+  .alert-info    { background: var(--info-bg);     color: var(--info);    border-color: var(--info); }
 
-  /* MODAL */
+  /* ── MODAL ── */
   .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    align-items: center; justify-content: center;
   }
-
   .modal-overlay.open { display: flex; }
 
   .modal {
-    background: var(--white);
-    border-radius: 8px;
-    padding: 2rem;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
+    background: var(--white); border-radius: 8px;
+    padding: 2rem; width: 90%; max-width: 700px;
+    max-height: 85vh; overflow-y: auto;
   }
 
+  .modal-lg { max-width: 900px; }
+
   .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
+    display: flex; justify-content: space-between;
+    align-items: flex-start; margin-bottom: 1.5rem;
   }
 
   .modal-header h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.1rem;
-    color: var(--maroon-dark);
-    font-weight: 400;
+    font-family: 'DM Serif Display', serif; font-size: 1.1rem;
+    color: var(--maroon-dark); font-weight: 400;
   }
 
   .modal-close {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--gray-500);
-    line-height: 1;
+    background: none; border: none; font-size: 22px;
+    cursor: pointer; color: var(--gray-500); line-height: 1;
   }
 
+  /* ── SUBJECT LIST (modal) ── */
   .subject-list { display: flex; flex-direction: column; gap: 6px; }
 
   .subject-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: var(--gray-50);
-    border-radius: 4px;
-    font-size: 13px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; background: var(--gray-50); border-radius: 4px; font-size: 13px;
   }
 
-  .subject-code { font-weight: 500; color: var(--maroon); min-width: 100px; }
-  .subject-name { flex: 1; padding: 0 12px; color: var(--gray-700); }
-  .subject-units { color: var(--gray-500); font-size: 12px; }
+  .subject-code { font-weight: 500; color: var(--maroon); min-width: 90px; }
+  .subject-name { flex: 1; padding: 0 10px; color: var(--gray-700); }
+  .subject-units { color: var(--gray-500); font-size: 12px; min-width: 50px; }
 
-  .empty-state {
-    text-align: center;
-    padding: 3rem;
-    color: var(--gray-500);
-    font-size: 14px;
+  /* ── TWO-COL LAYOUT ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  /* ── EMPTY ── */
+  .empty-state { text-align: center; padding: 3rem; color: var(--gray-500); font-size: 14px; }
+
+  /* ── NOTICE CHIP ── */
+  .notice-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
+    background: var(--warning-bg); color: var(--warning);
   }
+
+  /* ── TAB STRIP ── */
+  .tab-strip {
+    display: flex; gap: 0; border-bottom: 2px solid var(--gray-100);
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-btn {
+    padding: 10px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    border: none; background: none; cursor: pointer; color: var(--gray-500);
+    border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--maroon); }
+  .tab-btn.active { color: var(--maroon); border-bottom-color: var(--maroon); font-weight: 500; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
-  .content { animation: fadeIn 0.3s ease both; }
+  .panel.active { animation: fadeIn 0.25s ease both; }
 </style>
 </head>
 <body>
 
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
 <div class="sidebar">
   <div class="sidebar-brand">
     <img src="/assets/CED-Logo.jpg" alt="CED"/>
@@ -456,14 +372,41 @@
     <p>Admin Portal</p>
   </div>
   <nav class="sidebar-nav">
-    <div class="nav-item active" onclick="showPanel('students')">
+    <div class="nav-section-label">Students</div>
+    <div class="nav-item active" onclick="showPanel('students', this)">
       <span class="nav-dot"></span> All Students
     </div>
-    <div class="nav-item" onclick="showPanel('register')">
+    <div class="nav-item" onclick="showPanel('register', this)">
       <span class="nav-dot"></span> Register Student
     </div>
-    <div class="nav-item" onclick="showPanel('enrollment')">
-    <span class="nav-dot"></span> Enrollment Settings
+    <div class="nav-item" onclick="showPanel('grades', this); loadGrades()">
+      <span class="nav-dot"></span> View Grades
+    </div>
+    <div class="nav-item" onclick="showPanel('manual-enroll', this)">
+      <span class="nav-dot"></span> Manual Enrollment
+    </div>
+
+    <div class="nav-section-label">Teachers</div>
+    <div class="nav-item" onclick="showPanel('teachers', this); loadTeachers()">
+      <span class="nav-dot"></span> All Teachers
+    </div>
+    <div class="nav-item" onclick="showPanel('register-teacher', this)">
+      <span class="nav-dot"></span> Register Teacher
+    </div>
+
+    <div class="nav-section-label">Scheduling</div>
+    <div class="nav-item" onclick="showPanel('sections', this); loadSections()">
+      <span class="nav-dot"></span> Sections & Schedules
+    </div>
+
+    <div class="nav-section-label">Notices</div>
+    <div class="nav-item" onclick="showPanel('notices', this); loadNotices()">
+      <span class="nav-dot"></span> Send Notices
+    </div>
+
+    <div class="nav-section-label">System</div>
+    <div class="nav-item" onclick="showPanel('enrollment', this); loadEnrollmentStatus()">
+      <span class="nav-dot"></span> Enrollment Settings
     </div>
   </nav>
   <div class="sidebar-footer">
@@ -471,15 +414,16 @@
   </div>
 </div>
 
+<!-- ══════════════════ MAIN ══════════════════ -->
 <div class="main">
   <div class="topbar">
-    <h1>Admin Dashboard</h1>
+    <h1 id="topbarTitle">Admin Dashboard</h1>
     <span class="topbar-user" id="topbarUser">Admin</span>
   </div>
 
   <div class="content">
 
-    <!-- STUDENTS PANEL -->
+    <!-- ═══ ALL STUDENTS ═══ -->
     <div class="panel active" id="panel-students">
       <div class="stats-row">
         <div class="stat-card">
@@ -487,19 +431,23 @@
           <div class="stat-value" id="statTotal">—</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">New Students</div>
+          <div class="stat-label">New</div>
           <div class="stat-value" id="statNew">—</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Old Students</div>
+          <div class="stat-label">Old</div>
           <div class="stat-value" id="statOld">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Shiftees</div>
+          <div class="stat-value" id="statShiftee">—</div>
         </div>
       </div>
 
       <div class="table-card">
         <div class="table-header">
           <h3>Registered Students</h3>
-          <input class="search-input" type="text" placeholder="Search by name or ID..." oninput="filterStudents(this.value)"/>
+          <input class="search-input" type="text" placeholder="Search name or ID…" oninput="filterStudents(this.value)"/>
         </div>
         <table>
           <thead>
@@ -510,18 +458,18 @@
               <th>Year</th>
               <th>Type</th>
               <th>Status</th>
-              <th>Ok to Enroll</th>
-              <th></th>
+              <th>Cleared</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="studentTableBody">
-            <tr><td colspan="8" class="empty-state">Loading students...</td></tr>
+            <tr><td colspan="8" class="empty-state">Loading…</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- REGISTER PANEL -->
+    <!-- ═══ REGISTER STUDENT ═══ -->
     <div class="panel" id="panel-register">
       <div class="form-card">
         <h3>Register New Student</h3>
@@ -549,131 +497,505 @@
           <div class="form-group">
             <label>Department</label>
             <select id="reg-department_id">
-              <option value="">Select department...</option>
+              <option value="">Select department…</option>
             </select>
           </div>
           <div class="form-group">
             <label>Year Level</label>
-            <select id="reg-year_level">
-              <option value="">Select year...</option>
+            <select id="reg-year_level" onchange="handleYearChange(this.value)">
+              <option value="">Select year…</option>
               <option value="1">1st Year</option>
               <option value="2">2nd Year</option>
               <option value="3">3rd Year</option>
               <option value="4">4th Year</option>
             </select>
           </div>
-
           <div class="form-group" id="type-group" style="display:none;">
-          <label>Student Type</label>
-          <select id="reg-type">
-          <option value="">Select type...</option>
-          <option value="old">Old Student</option>
-          <option value="shiftee">Shiftee</option>
-          </select>
+            <label>Student Type</label>
+            <select id="reg-type">
+              <option value="">Select type…</option>
+              <option value="shiftee">Shiftee</option>
+            </select>
           </div>
         </div>
-
         <div class="form-actions">
           <button class="btn-primary" id="registerBtn" onclick="registerStudent()">Register & Auto-Enroll</button>
         </div>
-
         <div class="alert alert-success" id="reg-success"></div>
         <div class="alert alert-error"   id="reg-error"></div>
       </div>
     </div>
 
+    <!-- ═══ GRADES ═══ -->
+    <div class="panel" id="panel-grades">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>All Student Grades</h3>
+          <div class="table-header-actions">
+            <input class="search-input" type="text" placeholder="Search student…" oninput="filterGrades(this.value)"/>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>No.</th>
+              <th>Subject</th>
+              <th>Year/Sem</th>
+              <th>Grade</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody id="gradesTableBody">
+            <tr><td colspan="6" class="empty-state">Loading grades…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-    <!-- ENROLLMENT SETTINGS PANEL -->
-<div class="panel" id="panel-enrollment">
-  <div class="form-card">
-    <h3>Enrollment Settings</h3>
+    <!-- ═══ MANUAL ENROLLMENT ═══ -->
+    <div class="panel" id="panel-manual-enroll">
+      <div class="two-col" style="align-items: start;">
+        <div class="form-card" style="max-width:100%;">
+          <h3>Manual Subject Enrollment</h3>
+          <p style="font-size:13px; color:var(--gray-500); margin-bottom:1.25rem;">
+            Use this for shiftees or admin overrides. Search for the student, then add or remove subjects.
+          </p>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label>Search Student</label>
+            <input type="text" id="me-search" placeholder="Name or student number…" oninput="searchStudentForEnroll(this.value)"/>
+          </div>
+          <div id="me-search-results" style="margin-bottom:1rem;"></div>
 
+          <div id="me-student-block" style="display:none;">
+            <div style="padding:12px; background:var(--maroon-bg); border-radius:6px; margin-bottom:1rem;">
+              <strong id="me-student-name"></strong>
+              <span style="font-size:12px; color:var(--gray-500); margin-left:8px;" id="me-student-meta"></span>
+            </div>
+
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="form-group">
+                <label>School Year</label>
+                <input type="text" id="me-school_year" placeholder="e.g. 2026-2027"/>
+              </div>
+              <div class="form-group">
+                <label>Semester</label>
+                <select id="me-semester">
+                  <option value="1">1st Semester</option>
+                  <option value="2">2nd Semester</option>
+                  <option value="3">Summer</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-primary" style="margin-bottom:1.5rem;" onclick="loadStudentEnrollmentView()">
+              Load Enrollments
+            </button>
+
+            <div id="me-subjects-block" style="display:none;">
+              <h4 style="font-size:13px; font-weight:500; color:var(--maroon-dark); margin-bottom:10px;">
+                Currently Enrolled
+              </h4>
+              <div id="me-current-subjects" class="subject-list" style="margin-bottom:1.5rem;"></div>
+
+              <h4 style="font-size:13px; font-weight:500; color:var(--maroon-dark); margin-bottom:10px;">
+                Add Subject
+              </h4>
+              <div style="display:flex; gap:8px; margin-bottom:8px;">
+                <select id="me-add-subject" style="flex:1; padding:8px 10px; border:1px solid var(--gray-300); border-radius:4px; font-family:inherit; font-size:13px;">
+                  <option value="">Select subject to add…</option>
+                </select>
+                <button class="btn-primary" onclick="addSubjectManually()">Add</button>
+              </div>
+              <div class="alert alert-success" id="me-success"></div>
+              <div class="alert alert-error"   id="me-error"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ALL TEACHERS ═══ -->
+    <div class="panel" id="panel-teachers">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Registered Teachers</h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teacherTableBody">
+            <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ REGISTER TEACHER ═══ -->
+    <div class="panel" id="panel-register-teacher">
+      <div class="form-card">
+        <h3>Register New Teacher</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="tr-first_name"/>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="tr-last_name"/>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="tr-email" placeholder="e.g. teacher@silliman.edu"/>
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <select id="tr-department_id">
+              <option value="">Select department…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Login Username</label>
+            <input type="text" id="tr-username" placeholder="e.g. jdoe_teacher"/>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="tr-password" placeholder="Initial password"/>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" id="registerTeacherBtn" onclick="registerTeacher()">Register Teacher</button>
+        </div>
+        <div class="alert alert-success" id="tr-success"></div>
+        <div class="alert alert-error"   id="tr-error"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTIONS & SCHEDULES ═══ -->
+    <div class="panel" id="panel-sections">
+      <div class="table-card" style="margin-bottom:1.5rem;">
+        <div class="table-header">
+          <h3>Sections & Schedules</h3>
+          <div class="table-header-actions">
+            <input class="search-input" type="text" id="sec-filter-year" placeholder="School year…" style="width:130px;"/>
+            <select id="sec-filter-sem" style="padding:7px 10px; border:1px solid var(--gray-300); border-radius:4px; font-family:inherit; font-size:13px;">
+              <option value="">All Semesters</option>
+              <option value="1">Sem 1</option>
+              <option value="2">Sem 2</option>
+              <option value="3">Summer</option>
+            </select>
+            <button class="btn-primary" style="padding:7px 14px; font-size:13px;" onclick="loadSections()">Filter</button>
+            <button class="btn-action secondary" onclick="openSectionModal()">+ New Section</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th>Subject</th>
+              <th>Teacher</th>
+              <th>Day / Time</th>
+              <th>Room</th>
+              <th>Cap</th>
+              <th>Year / Sem</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sectionsTableBody">
+            <tr><td colspan="8" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ NOTICES ═══ -->
+    <div class="panel" id="panel-notices">
+      <div class="two-col" style="align-items:start; margin-bottom:1.5rem;">
+
+        <!-- Send Notice Form -->
+        <div class="form-card" style="max-width:100%;">
+          <h3>Send Notice</h3>
+
+          <div class="tab-strip">
+            <button class="tab-btn active" onclick="switchNoticeTab('student', this)">To a Student</button>
+            <button class="tab-btn" onclick="switchNoticeTab('teacher-students', this)">To Teacher's Students</button>
+          </div>
+
+          <!-- Tab: specific student -->
+          <div class="tab-content active" id="notice-tab-student">
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Search Student</label>
+              <input type="text" id="nt-student-search" placeholder="Name or student number…" oninput="searchStudentForNotice(this.value)"/>
+            </div>
+            <div id="nt-student-results" style="margin-bottom:1rem;"></div>
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Notice Type</label>
+              <select id="nt-type">
+                <option value="f2f_required">F2F Required</option>
+                <option value="unit_overload">Unit Overload</option>
+                <option value="unit_underload">Unit Underload</option>
+                <option value="prereq_not_met">Prerequisite Not Met</option>
+                <option value="conflict">Conflict</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Message</label>
+              <textarea id="nt-message" placeholder="Type your notice message…"></textarea>
+            </div>
+            <input type="hidden" id="nt-student-id"/>
+            <button class="btn-primary" onclick="sendNoticeToStudent()">Send Notice</button>
+            <div class="alert alert-success" id="nt-success"></div>
+            <div class="alert alert-error"   id="nt-error"></div>
+          </div>
+
+          <!-- Tab: all students of a teacher -->
+          <div class="tab-content" id="notice-tab-teacher-students">
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Select Teacher</label>
+              <select id="nt-teacher-id">
+                <option value="">Select a teacher…</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Message</label>
+              <textarea id="nt-teacher-message" placeholder="Type your notice message…"></textarea>
+            </div>
+            <button class="btn-primary" onclick="sendNoticeToTeacherStudents()">Send to All Students</button>
+            <div class="alert alert-success" id="nt-t-success"></div>
+            <div class="alert alert-error"   id="nt-t-error"></div>
+          </div>
+        </div>
+
+        <!-- Notices Log -->
+        <div class="table-card" style="max-width:100%;">
+          <div class="table-header">
+            <h3>Recent Notices</h3>
+            <button class="btn-action secondary" onclick="loadNotices()">Refresh</button>
+          </div>
+          <div id="noticeLog" style="max-height:500px; overflow-y:auto;">
+            <div class="empty-state">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ENROLLMENT SETTINGS ═══ -->
+    <div class="panel" id="panel-enrollment">
+      <div class="form-card">
+        <h3>Enrollment Settings</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>School Year</label>
+            <input type="text" id="enr-school_year" placeholder="e.g. 2026-2027"/>
+          </div>
+          <div class="form-group">
+            <label>Semester</label>
+            <select id="enr-semester">
+              <option value="1">1st Semester</option>
+              <option value="2">2nd Semester</option>
+              <option value="3">Summer</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem; display:flex; gap:10px;">
+          <button class="btn-primary" onclick="setEnrollment(1)">Open Enrollment</button>
+          <button class="btn-primary" style="background:var(--error);" onclick="setEnrollment(0)">Close Enrollment</button>
+        </div>
+        <div class="alert alert-success" id="enr-success"></div>
+        <div class="alert alert-error"   id="enr-error"></div>
+        <div style="margin-top:1.5rem; padding:1rem; background:var(--gray-50); border-radius:6px; font-size:13px;">
+          <p style="color:var(--gray-500); margin-bottom:6px; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;">Current Status</p>
+          <p id="enr-status">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+
+<!-- ══════════════════ MODALS ══════════════════ -->
+
+<!-- Student Enrollments Modal -->
+<div class="modal-overlay" id="enrollmentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalStudentName">Student Subjects</h3>
+      <button class="modal-close" onclick="closeModal('enrollmentModal')">×</button>
+    </div>
+    <div class="subject-list" id="modalSubjectList">
+      <div class="empty-state">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Teacher Subjects Modal -->
+<div class="modal-overlay" id="teacherSubjectModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="tsModalTitle">Assign Subjects</h3>
+      <button class="modal-close" onclick="closeModal('teacherSubjectModal')">×</button>
+    </div>
+    <div class="two-col" style="gap:1.5rem;">
+      <div>
+        <h4 style="font-size:13px; font-weight:500; color:var(--maroon-dark); margin-bottom:10px;">Assigned Subjects</h4>
+        <div id="ts-assigned-list" class="subject-list"></div>
+      </div>
+      <div>
+        <h4 style="font-size:13px; font-weight:500; color:var(--maroon-dark); margin-bottom:10px;">Add Subject</h4>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <select id="ts-add-subject" style="flex:1; padding:8px 10px; border:1px solid var(--gray-300); border-radius:4px; font-family:inherit; font-size:13px;">
+            <option value="">Select subject…</option>
+          </select>
+          <button class="btn-primary" onclick="assignSubjectToTeacher()">Assign</button>
+        </div>
+        <div class="alert alert-success" id="ts-success"></div>
+        <div class="alert alert-error"   id="ts-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section Create/Edit Modal -->
+<div class="modal-overlay" id="sectionModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="secModalTitle">New Section</h3>
+      <button class="modal-close" onclick="closeModal('sectionModal')">×</button>
+    </div>
     <div class="form-grid">
+      <input type="hidden" id="sec-id"/>
+      <div class="form-group">
+        <label>Subject</label>
+        <select id="sec-subject_id">
+          <option value="">Select subject…</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Teacher</label>
+        <select id="sec-teacher_id">
+          <option value="">No teacher assigned</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section Code</label>
+        <input type="text" id="sec-section_code" placeholder="e.g. A, B, 01"/>
+      </div>
+      <div class="form-group">
+        <label>Capacity</label>
+        <input type="number" id="sec-capacity" value="40"/>
+      </div>
+      <div class="form-group">
+        <label>Day</label>
+        <select id="sec-day">
+          <option value="">— TBA —</option>
+          <option>Mon</option><option>Tue</option><option>Wed</option>
+          <option>Thu</option><option>Fri</option><option>Sat</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Room</label>
+        <input type="text" id="sec-room" placeholder="e.g. CEDC 201"/>
+      </div>
+      <div class="form-group">
+        <label>Time Start</label>
+        <input type="time" id="sec-time_start"/>
+      </div>
+      <div class="form-group">
+        <label>Time End</label>
+        <input type="time" id="sec-time_end"/>
+      </div>
       <div class="form-group">
         <label>School Year</label>
-        <input type="text" id="enr-school_year" placeholder="e.g. 2026-2027"/>
+        <input type="text" id="sec-school_year" placeholder="e.g. 2026-2027"/>
       </div>
       <div class="form-group">
         <label>Semester</label>
-        <select id="enr-semester">
+        <select id="sec-semester">
           <option value="1">1st Semester</option>
           <option value="2">2nd Semester</option>
           <option value="3">Summer</option>
         </select>
       </div>
     </div>
-
-    <div style="margin-top: 1.5rem; display: flex; gap: 10px;">
-      <button class="btn-primary" onclick="setEnrollment(1)">Open Enrollment</button>
-      <button class="btn-primary" style="background: var(--error);" onclick="setEnrollment(0)">Close Enrollment</button>
+    <div class="form-actions" style="margin-top:1.5rem;">
+      <button class="btn-primary" id="sec-save-btn" onclick="saveSection()">Save Section</button>
+      <button class="btn-secondary" onclick="closeModal('sectionModal')">Cancel</button>
     </div>
-
-    <div class="alert alert-success" id="enr-success"></div>
-    <div class="alert alert-error"   id="enr-error"></div>
-
-    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 6px; font-size: 13px;">
-      <p style="color: var(--gray-500); margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;">Current Status</p>
-      <p id="enr-status">Loading...</p>
-    </div>
+    <div class="alert alert-success" id="sec-success"></div>
+    <div class="alert alert-error"   id="sec-error"></div>
   </div>
 </div>
-  </div>
 
-  
-</div>
-
-<!-- MODAL: Student Enrollments -->
-<div class="modal-overlay" id="enrollmentModal">
+<!-- Student Grades Modal -->
+<div class="modal-overlay" id="gradesModal">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modalStudentName">Student Enrollments</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <h3 id="gradesModalTitle">Student Grades</h3>
+      <button class="modal-close" onclick="closeModal('gradesModal')">×</button>
     </div>
-    <div class="subject-list" id="modalSubjectList">
-      <div class="empty-state">Loading...</div>
+    <div id="gradesModalBody" class="subject-list">
+      <div class="empty-state">Loading…</div>
     </div>
   </div>
 </div>
 
+
+<!-- ══════════════════ SCRIPT ══════════════════ -->
 <script>
 const API = 'http://localhost:5000';
-let allStudents = [];
+let allStudents  = [];
+let allGrades    = [];
+let allTeachers  = [];
+let allSubjects  = [];
+let allSections  = [];
+let selectedTeacherId = null;
+let selectedEnrollStudentId = null;
 
-document.getElementById('reg-year_level').addEventListener('change', function() {
-    const typeGroup = document.getElementById('type-group');
-    const typeSelect = document.getElementById('reg-type');
-    if (this.value === '1') {
-        typeGroup.style.display = 'none';
-        typeSelect.value = '';
-    } else {
-        typeGroup.style.display = 'flex';
-    }
-});
+// ── UTILS ───────────────────────────────────────
+function getToken()    { return localStorage.getItem('token'); }
+function authHeaders() { return { 'Content-Type':'application/json', 'Authorization':`Bearer ${getToken()}` }; }
+function logout()      { localStorage.clear(); window.location.href = '/login.html'; }
 
-function getToken() {
-  return localStorage.getItem('token');
-}
-
-function authHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${getToken()}`
-  };
-}
-
-function logout() {
-  localStorage.clear();
-  window.location.href = '/login.html';
-}
-
-function showPanel(name) {
+function showPanel(name, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = {
+    students:'All Students', register:'Register Student', grades:'Student Grades',
+    'manual-enroll':'Manual Enrollment', teachers:'All Teachers',
+    'register-teacher':'Register Teacher', sections:'Sections & Schedules',
+    notices:'Notices', enrollment:'Enrollment Settings'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || 'Admin Dashboard';
 }
 
-// ── LOAD STUDENTS ──────────────────────────────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function flash(id, msg, type='success') {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `alert alert-${type}`;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+function switchNoticeTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('notice-tab-' + tab).classList.add('active');
+}
+
+// ── STUDENTS ────────────────────────────────────
 async function loadStudents() {
   try {
     const res = await fetch(`${API}/api/students/all`, { headers: authHeaders() });
@@ -688,14 +1010,15 @@ async function loadStudents() {
 }
 
 function updateStats(students) {
-  document.getElementById('statTotal').textContent = students.length;
-  document.getElementById('statNew').textContent   = students.filter(s => s.type === 'new').length;
-  document.getElementById('statOld').textContent   = students.filter(s => s.type === 'old').length;
+  document.getElementById('statTotal').textContent   = students.length;
+  document.getElementById('statNew').textContent     = students.filter(s => s.type === 'new').length;
+  document.getElementById('statOld').textContent     = students.filter(s => s.type === 'old').length;
+  document.getElementById('statShiftee').textContent = students.filter(s => s.type === 'shiftee').length;
 }
 
 function renderStudents(students) {
   const tbody = document.getElementById('studentTableBody');
-  if (students.length === 0) {
+  if (!students.length) {
     tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No students found.</td></tr>`;
     return;
   }
@@ -705,81 +1028,106 @@ function renderStudents(students) {
       <td>${s.last_name}, ${s.first_name}</td>
       <td>${s.course}</td>
       <td>Year ${s.year_level}</td>
-      <td><span class="badge badge-${s.type}">${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</span></td>
-      <td><span class="badge badge-${s.status || 'new'}">${s.status || '—'}</span></td>
+      <td><span class="badge badge-${s.type}">${s.type}</span></td>
+      <td><span class="badge badge-${s.status || 'gray'}">${s.status || '—'}</span></td>
       <td><span class="badge ${s.ok_to_enroll ? 'badge-ok' : 'badge-notok'}">${s.ok_to_enroll ? 'Cleared' : 'Pending'}</span></td>
-      <td><button class="btn-action" onclick="viewEnrollments(${s.id}, '${s.first_name} ${s.last_name}')">View Subjects</button></td>
+      <td style="display:flex; gap:4px; flex-wrap:wrap;">
+        <button class="btn-action" onclick="viewEnrollments(${s.id},'${s.first_name} ${s.last_name}')">Subjects</button>
+        <button class="btn-action secondary" onclick="viewStudentGrades(${s.id},'${s.first_name} ${s.last_name}')">Grades</button>
+        <button class="btn-action secondary" onclick="quickNotice(${s.id},'${s.first_name} ${s.last_name}')">Notice</button>
+      </td>
     </tr>
   `).join('');
 }
 
-function filterStudents(query) {
-  const q = query.toLowerCase();
-  const filtered = allStudents.filter(s =>
-    s.student_number.toLowerCase().includes(q) ||
-    s.first_name.toLowerCase().includes(q) ||
-    s.last_name.toLowerCase().includes(q)
-  );
-  renderStudents(filtered);
+function filterStudents(q) {
+  const lq = q.toLowerCase();
+  renderStudents(allStudents.filter(s =>
+    s.student_number.toLowerCase().includes(lq) ||
+    s.first_name.toLowerCase().includes(lq) ||
+    s.last_name.toLowerCase().includes(lq)
+  ));
 }
 
-// ── VIEW ENROLLMENTS MODAL ─────────────────────────────────
 async function viewEnrollments(studentId, name) {
   document.getElementById('modalStudentName').textContent = name + ' — Enrolled Subjects';
-  document.getElementById('modalSubjectList').innerHTML = '<div class="empty-state">Loading...</div>';
+  document.getElementById('modalSubjectList').innerHTML = '<div class="empty-state">Loading…</div>';
   document.getElementById('enrollmentModal').classList.add('open');
 
-  try {
-    const res = await fetch(`${API}/api/students/${studentId}/enrollments`, { headers: authHeaders() });
-    const subjects = await res.json();
+  const res = await fetch(`${API}/api/students/${studentId}/enrollments`, { headers: authHeaders() });
+  const subjects = await res.json();
 
-    if (subjects.length === 0) {
-      document.getElementById('modalSubjectList').innerHTML = '<div class="empty-state">No subjects enrolled.</div>';
-      return;
-    }
-
-    document.getElementById('modalSubjectList').innerHTML = subjects.map(s => `
-      <div class="subject-row">
-        <span class="subject-code">${s.code}</span>
-        <span class="subject-name">${s.name}</span>
-        <span class="subject-units">${s.units} units</span>
-        <span class="badge badge-${s.status === 'auto_enrolled' ? 'new' : 'old'}" style="margin-left:8px;">${s.status.replace('_', ' ')}</span>
-      </div>
-    `).join('');
-  } catch (err) {
-    document.getElementById('modalSubjectList').innerHTML = '<div class="empty-state">Could not load subjects.</div>';
+  if (!subjects.length) {
+    document.getElementById('modalSubjectList').innerHTML = '<div class="empty-state">No subjects enrolled.</div>';
+    return;
   }
+  document.getElementById('modalSubjectList').innerHTML = subjects.map(s => `
+    <div class="subject-row">
+      <span class="subject-code">${s.code}</span>
+      <span class="subject-name">${s.name}</span>
+      <span class="subject-units">${s.units} u</span>
+      <span class="badge badge-gray" style="margin-left:8px;">${s.status.replace(/_/g,' ')}</span>
+    </div>
+  `).join('');
 }
 
-function closeModal() {
-  document.getElementById('enrollmentModal').classList.remove('open');
+async function viewStudentGrades(studentId, name) {
+  document.getElementById('gradesModalTitle').textContent = name + ' — Grades';
+  document.getElementById('gradesModalBody').innerHTML = '<div class="empty-state">Loading…</div>';
+  document.getElementById('gradesModal').classList.add('open');
+
+  const res = await fetch(`${API}/api/admin/students/${studentId}/grades`, { headers: authHeaders() });
+  const grades = await res.json();
+
+  if (!grades.length) {
+    document.getElementById('gradesModalBody').innerHTML = '<div class="empty-state">No grades recorded yet.</div>';
+    return;
+  }
+  document.getElementById('gradesModalBody').innerHTML = grades.map(g => `
+    <div class="subject-row">
+      <span class="subject-code">${g.code}</span>
+      <span class="subject-name">${g.name}</span>
+      <span style="font-size:12px; color:var(--gray-500); min-width:80px;">${g.school_year} S${g.semester}</span>
+      <span style="font-weight:600; color:var(--maroon); min-width:40px;">${g.grade ?? '—'}</span>
+      <span class="badge ${g.passed ? 'badge-ok' : 'badge-notok'}">${g.passed ? 'Passed' : 'Failed'}</span>
+    </div>
+  `).join('');
 }
 
-// ── LOAD DEPARTMENTS ───────────────────────────────────────
+function quickNotice(studentId, name) {
+  showPanel('notices', document.querySelector('.nav-item[onclick*="notices"]'));
+  document.getElementById('nt-student-id').value = studentId;
+  document.getElementById('nt-student-search').value = name;
+  document.getElementById('nt-student-results').innerHTML =
+    `<div style="padding:6px 10px; background:var(--maroon-bg); border-radius:4px; font-size:13px;">
+       Selected: <strong>${name}</strong>
+     </div>`;
+  loadNotices();
+}
+
+// ── REGISTER STUDENT ─────────────────────────────
+function handleYearChange(val) {
+  const tg = document.getElementById('type-group');
+  tg.style.display = val === '1' ? 'none' : 'flex';
+}
+
 async function loadDepartments() {
-  try {
-    const res = await fetch(`${API}/api/students/departments`, { headers: authHeaders() });
-    const depts = await res.json();
-    const select = document.getElementById('reg-department_id');
+  const res = await fetch(`${API}/api/students/departments`, { headers: authHeaders() });
+  const depts = await res.json();
+  ['reg-department_id','tr-department_id','ts-dept-filter'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Select department…</option>';
     depts.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d.id;
-      opt.textContent = `${d.code} — ${d.name}`;
-      select.appendChild(opt);
+      const o = document.createElement('option');
+      o.value = d.id; o.textContent = `${d.code} — ${d.name}`;
+      sel.appendChild(o);
     });
-  } catch (err) {
-    console.error('Could not load departments');
-  }
+  });
 }
 
-// ── REGISTER STUDENT ───────────────────────────────────────
 async function registerStudent() {
   const btn = document.getElementById('registerBtn');
-  const successEl = document.getElementById('reg-success');
-  const errorEl   = document.getElementById('reg-error');
-  successEl.style.display = 'none';
-  errorEl.style.display   = 'none';
-
   const body = {
     student_number: document.getElementById('reg-student_number').value.trim(),
     first_name:     document.getElementById('reg-first_name').value.trim(),
@@ -788,117 +1136,556 @@ async function registerStudent() {
     address:        document.getElementById('reg-address').value.trim(),
     department_id:  document.getElementById('reg-department_id').value,
     course: document.getElementById('reg-department_id').options[document.getElementById('reg-department_id').selectedIndex]?.text.split('—')[1]?.trim() || '',
-    year_level:     document.getElementById('reg-year_level').value,
-    type:           document.getElementById('reg-year_level').value === '1' 
-                        ? 'new' 
-                        : document.getElementById('reg-type').value,
+    year_level: document.getElementById('reg-year_level').value,
+    type: document.getElementById('reg-year_level').value === '1'
+            ? 'new'
+            : document.getElementById('reg-type').value,
   };
 
   if (Object.values(body).some(v => !v)) {
-    errorEl.textContent = 'Please fill in all fields.';
-    errorEl.style.display = 'block';
+    flash('reg-error','Please fill in all fields.','error');
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = 'Registering...';
-
+  btn.disabled = true; btn.textContent = 'Registering…';
   try {
-    const res = await fetch(`${API}/api/students/new`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify(body)
-    });
-
+    const res = await fetch(`${API}/api/students/new`, { method:'POST', headers: authHeaders(), body: JSON.stringify(body) });
     const data = await res.json();
-
-    if (!res.ok) {
-      errorEl.textContent = data.message || 'Registration failed.';
-      errorEl.style.display = 'block';
-      return;
-    }
-
-    successEl.innerHTML = `
-      <strong>${body.first_name} ${body.last_name}</strong> registered successfully!<br>
-      Auto-enrolled in <strong>${data.enrolled_subjects?.length || 0}</strong> subjects for ${data.school_year}.
-    `;
-    successEl.style.display = 'block';
-
+    if (!res.ok) { flash('reg-error', data.message || 'Registration failed.', 'error'); return; }
+    flash('reg-success', `${body.first_name} ${body.last_name} registered! Auto-enrolled in ${data.enrolled_subjects?.length || 0} subjects.`);
     document.querySelectorAll('#panel-register input, #panel-register select').forEach(el => el.value = '');
     loadStudents();
+  } catch { flash('reg-error','Cannot connect to server.','error'); }
+  finally { btn.disabled = false; btn.textContent = 'Register & Auto-Enroll'; }
+}
 
-  } catch (err) {
-    errorEl.textContent = 'Cannot connect to server.';
-    errorEl.style.display = 'block';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Register & Auto-Enroll';
+// ── GRADES TABLE ─────────────────────────────────
+async function loadGrades() {
+  try {
+    const res = await fetch(`${API}/api/admin/grades/all`, { headers: authHeaders() });
+    allGrades = await res.json();
+    renderGrades(allGrades);
+  } catch { document.getElementById('gradesTableBody').innerHTML = `<tr><td colspan="6" class="empty-state">Could not load grades.</td></tr>`; }
+}
+
+function renderGrades(grades) {
+  const tbody = document.getElementById('gradesTableBody');
+  if (!grades.length) { tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No grades recorded.</td></tr>`; return; }
+  tbody.innerHTML = grades.map(g => `
+    <tr>
+      <td>${g.last_name}, ${g.first_name}</td>
+      <td style="font-size:12px; color:var(--gray-500);">${g.student_number}</td>
+      <td><span style="font-weight:500; color:var(--maroon);">${g.subject_code}</span> ${g.subject_name}</td>
+      <td style="font-size:12px;">${g.school_year} S${g.semester}</td>
+      <td style="font-weight:600;">${g.grade ?? '—'}</td>
+      <td><span class="badge ${g.passed ? 'badge-ok':'badge-notok'}">${g.passed ? 'Passed':'Failed'}</span></td>
+    </tr>
+  `).join('');
+}
+
+function filterGrades(q) {
+  const lq = q.toLowerCase();
+  renderGrades(allGrades.filter(g =>
+    g.student_number.toLowerCase().includes(lq) ||
+    g.first_name.toLowerCase().includes(lq) ||
+    g.last_name.toLowerCase().includes(lq) ||
+    g.subject_code.toLowerCase().includes(lq)
+  ));
+}
+
+// ── TEACHERS ─────────────────────────────────────
+async function loadTeachers() {
+  try {
+    const res = await fetch(`${API}/api/admin/teachers`, { headers: authHeaders() });
+    allTeachers = await res.json();
+    renderTeachers(allTeachers);
+    populateTeacherDropdowns();
+  } catch { document.getElementById('teacherTableBody').innerHTML = `<tr><td colspan="5" class="empty-state">Could not load teachers.</td></tr>`; }
+}
+
+function renderTeachers(teachers) {
+  const tbody = document.getElementById('teacherTableBody');
+  if (!teachers.length) { tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No teachers registered.</td></tr>`; return; }
+  tbody.innerHTML = teachers.map(t => `
+    <tr>
+      <td><strong>${t.last_name}, ${t.first_name}</strong></td>
+      <td>${t.department_name || '—'}</td>
+      <td style="font-size:12px; color:var(--gray-500);">${t.email || '—'}</td>
+      <td><code style="font-size:12px; background:var(--gray-100); padding:2px 6px; border-radius:3px;">${t.username}</code></td>
+      <td>
+        <button class="btn-action" onclick="openTeacherSubjectModal(${t.id}, '${t.first_name} ${t.last_name}')">Assign Subjects</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function populateTeacherDropdowns() {
+  const selectors = ['nt-teacher-id', 'sec-teacher_id'];
+  selectors.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const blank = sel.options[0];
+    sel.innerHTML = '';
+    if (blank) sel.appendChild(blank);
+    allTeachers.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t.id; o.textContent = `${t.last_name}, ${t.first_name}`;
+      sel.appendChild(o);
+    });
+  });
+}
+
+async function registerTeacher() {
+  const btn = document.getElementById('registerTeacherBtn');
+  const body = {
+    first_name:    document.getElementById('tr-first_name').value.trim(),
+    last_name:     document.getElementById('tr-last_name').value.trim(),
+    email:         document.getElementById('tr-email').value.trim(),
+    department_id: document.getElementById('tr-department_id').value || null,
+    username:      document.getElementById('tr-username').value.trim(),
+    password:      document.getElementById('tr-password').value,
+  };
+  if (!body.first_name || !body.last_name || !body.username || !body.password) {
+    flash('tr-error','Please fill in all required fields.','error'); return;
+  }
+  btn.disabled = true; btn.textContent = 'Registering…';
+  try {
+    const res = await fetch(`${API}/api/admin/teachers/register`, { method:'POST', headers: authHeaders(), body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { flash('tr-error', data.message || 'Failed.', 'error'); return; }
+    flash('tr-success', `${body.first_name} ${body.last_name} registered as teacher.`);
+    document.querySelectorAll('#panel-register-teacher input, #panel-register-teacher select').forEach(el => el.value = '');
+    loadTeachers();
+  } catch { flash('tr-error','Cannot connect to server.','error'); }
+  finally { btn.disabled = false; btn.textContent = 'Register Teacher'; }
+}
+
+// ── TEACHER SUBJECT ASSIGNMENT ────────────────────
+async function loadAllSubjects() {
+  if (allSubjects.length) return;
+  const res = await fetch(`${API}/api/admin/subjects`, { headers: authHeaders() });
+  allSubjects = await res.json();
+  const sel = document.getElementById('ts-add-subject');
+  sel.innerHTML = '<option value="">Select subject…</option>';
+  allSubjects.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = `${s.code} — ${s.name} (${s.units}u)`;
+    sel.appendChild(o);
+  });
+
+  // Also populate section subject select
+  const secSel = document.getElementById('sec-subject_id');
+  secSel.innerHTML = '<option value="">Select subject…</option>';
+  allSubjects.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = `${s.code} — ${s.name}`;
+    secSel.appendChild(o);
+  });
+}
+
+async function openTeacherSubjectModal(teacherId, name) {
+  selectedTeacherId = teacherId;
+  document.getElementById('tsModalTitle').textContent = `Subjects — ${name}`;
+  document.getElementById('teacherSubjectModal').classList.add('open');
+  document.getElementById('ts-assigned-list').innerHTML = '<div class="empty-state">Loading…</div>';
+  await loadAllSubjects();
+  await refreshTeacherAssigned();
+}
+
+async function refreshTeacherAssigned() {
+  const res = await fetch(`${API}/api/admin/teachers/${selectedTeacherId}/subjects`, { headers: authHeaders() });
+  const subjects = await res.json();
+  const el = document.getElementById('ts-assigned-list');
+  if (!subjects.length) { el.innerHTML = '<div class="empty-state">No subjects assigned yet.</div>'; return; }
+  el.innerHTML = subjects.map(s => `
+    <div class="subject-row">
+      <span class="subject-code">${s.code}</span>
+      <span class="subject-name">${s.name}</span>
+      <span class="subject-units">${s.units}u</span>
+      <button class="btn-action danger" onclick="removeSubjectFromTeacher(${s.id})">Remove</button>
+    </div>
+  `).join('');
+}
+
+async function assignSubjectToTeacher() {
+  const subject_id = document.getElementById('ts-add-subject').value;
+  if (!subject_id) { flash('ts-error','Select a subject first.','error'); return; }
+  const res = await fetch(`${API}/api/admin/teachers/${selectedTeacherId}/subjects`, {
+    method:'POST', headers: authHeaders(), body: JSON.stringify({ subject_id })
+  });
+  const data = await res.json();
+  if (!res.ok) { flash('ts-error', data.message, 'error'); return; }
+  flash('ts-success', data.message);
+  refreshTeacherAssigned();
+}
+
+async function removeSubjectFromTeacher(subjectId) {
+  if (!confirm('Remove this subject from the teacher?')) return;
+  const res = await fetch(`${API}/api/admin/teachers/${selectedTeacherId}/subjects/${subjectId}`, {
+    method:'DELETE', headers: authHeaders()
+  });
+  const data = await res.json();
+  flash('ts-success', data.message);
+  refreshTeacherAssigned();
+}
+
+// ── SECTIONS ─────────────────────────────────────
+async function loadSections() {
+  const year = document.getElementById('sec-filter-year').value.trim();
+  const sem  = document.getElementById('sec-filter-sem').value;
+  let url = `${API}/api/admin/sections`;
+  const params = new URLSearchParams();
+  if (year) params.append('school_year', year);
+  if (sem)  params.append('semester', sem);
+  if (params.toString()) url += '?' + params;
+
+  try {
+    const res = await fetch(url, { headers: authHeaders() });
+    allSections = await res.json();
+    renderSections(allSections);
+  } catch {
+    document.getElementById('sectionsTableBody').innerHTML = `<tr><td colspan="8" class="empty-state">Could not load sections.</td></tr>`;
   }
 }
 
-// ── ENROLLMENT SETTINGS ────────────────────────────────────
+function renderSections(sections) {
+  const tbody = document.getElementById('sectionsTableBody');
+  if (!sections.length) { tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No sections found.</td></tr>`; return; }
+  tbody.innerHTML = sections.map(s => {
+    const time = s.time_start ? `${fmtTime(s.time_start)} – ${fmtTime(s.time_end)}` : 'TBA';
+    const teacher = s.teacher_last ? `${s.teacher_last}, ${s.teacher_first}` : '—';
+    return `
+      <tr>
+        <td><strong>${s.section_code}</strong></td>
+        <td><span style="color:var(--maroon); font-weight:500;">${s.subject_code}</span><br><span style="font-size:11px; color:var(--gray-500);">${s.subject_name}</span></td>
+        <td style="font-size:12px;">${teacher}</td>
+        <td style="font-size:12px;">${s.day || 'TBA'} ${time}</td>
+        <td style="font-size:12px;">${s.room || '—'}</td>
+        <td style="font-size:12px;">${s.capacity}</td>
+        <td style="font-size:12px;">${s.school_year} S${s.semester}</td>
+        <td style="display:flex; gap:4px;">
+          <button class="btn-action secondary" onclick="editSection(${s.id})">Edit</button>
+          <button class="btn-action danger" onclick="deleteSection(${s.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function fmtTime(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':');
+  const hr = parseInt(h);
+  return `${hr % 12 || 12}:${m} ${hr < 12 ? 'AM' : 'PM'}`;
+}
+
+async function openSectionModal(sectionId) {
+  await loadAllSubjects();
+  await loadTeachers();
+
+  document.getElementById('sec-id').value = '';
+  document.getElementById('sec-subject_id').value = '';
+  document.getElementById('sec-teacher_id').value = '';
+  document.getElementById('sec-section_code').value = '';
+  document.getElementById('sec-capacity').value = '40';
+  document.getElementById('sec-day').value = '';
+  document.getElementById('sec-room').value = '';
+  document.getElementById('sec-time_start').value = '';
+  document.getElementById('sec-time_end').value = '';
+  document.getElementById('sec-school_year').value = '';
+  document.getElementById('sec-semester').value = '1';
+  document.getElementById('secModalTitle').textContent = 'New Section';
+  document.getElementById('sec-save-btn').textContent = 'Save Section';
+  document.getElementById('sectionModal').classList.add('open');
+}
+
+function editSection(sectionId) {
+  const sec = allSections.find(s => s.id === sectionId);
+  if (!sec) return;
+  loadAllSubjects().then(() => {
+    document.getElementById('sec-id').value = sec.id;
+    document.getElementById('sec-subject_id').value = ''; // already created, can't change
+    document.getElementById('sec-teacher_id').value = sec.teacher_id || '';
+    document.getElementById('sec-section_code').value = sec.section_code;
+    document.getElementById('sec-capacity').value = sec.capacity;
+    document.getElementById('sec-day').value = sec.day || '';
+    document.getElementById('sec-room').value = sec.room || '';
+    document.getElementById('sec-time_start').value = sec.time_start ? sec.time_start.slice(0,5) : '';
+    document.getElementById('sec-time_end').value = sec.time_end ? sec.time_end.slice(0,5) : '';
+    document.getElementById('sec-school_year').value = sec.school_year;
+    document.getElementById('sec-semester').value = sec.semester;
+    document.getElementById('secModalTitle').textContent = 'Edit Section';
+    document.getElementById('sec-save-btn').textContent = 'Update Section';
+    document.getElementById('sec-subject_id').disabled = true;
+    document.getElementById('sectionModal').classList.add('open');
+  });
+}
+
+async function saveSection() {
+  const secId = document.getElementById('sec-id').value;
+  const isEdit = !!secId;
+
+  const body = {
+    subject_id:    document.getElementById('sec-subject_id').value,
+    teacher_id:    document.getElementById('sec-teacher_id').value || null,
+    section_code:  document.getElementById('sec-section_code').value.trim(),
+    capacity:      document.getElementById('sec-capacity').value,
+    day:           document.getElementById('sec-day').value || null,
+    time_start:    document.getElementById('sec-time_start').value || null,
+    time_end:      document.getElementById('sec-time_end').value || null,
+    room:          document.getElementById('sec-room').value.trim() || null,
+    school_year:   document.getElementById('sec-school_year').value.trim(),
+    semester:      document.getElementById('sec-semester').value,
+  };
+
+  if (!isEdit && !body.subject_id) { flash('sec-error','Please select a subject.','error'); return; }
+  if (!body.section_code || !body.school_year) { flash('sec-error','Section code and school year are required.','error'); return; }
+
+  const url    = isEdit ? `${API}/api/admin/sections/${secId}` : `${API}/api/admin/sections`;
+  const method = isEdit ? 'PATCH' : 'POST';
+
+  const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) { flash('sec-error', data.message, 'error'); return; }
+  flash('sec-success', data.message);
+  setTimeout(() => { closeModal('sectionModal'); loadSections(); }, 1000);
+  document.getElementById('sec-subject_id').disabled = false;
+}
+
+async function deleteSection(sectionId) {
+  if (!confirm('Delete this section? Students assigned to it will lose their schedule.')) return;
+  const res = await fetch(`${API}/api/admin/sections/${sectionId}`, { method:'DELETE', headers: authHeaders() });
+  const data = await res.json();
+  if (!res.ok) { alert(data.message); return; }
+  loadSections();
+}
+
+// ── MANUAL ENROLLMENT ────────────────────────────
+let meSearchTimer = null;
+
+function searchStudentForEnroll(query) {
+  clearTimeout(meSearchTimer);
+  if (query.length < 2) { document.getElementById('me-search-results').innerHTML = ''; return; }
+  meSearchTimer = setTimeout(async () => {
+    const res = await fetch(`${API}/api/students/search?query=${encodeURIComponent(query)}`, { headers: authHeaders() });
+    const students = await res.json();
+    const el = document.getElementById('me-search-results');
+    if (!students.length) { el.innerHTML = '<div style="font-size:13px; color:var(--gray-500);">No results.</div>'; return; }
+    el.innerHTML = students.slice(0,5).map(s => `
+      <div onclick="selectEnrollStudent(${s.id},'${s.first_name} ${s.last_name}','${s.course}, Year ${s.year_level}')"
+           style="padding:8px 12px; background:var(--gray-50); border-radius:4px; cursor:pointer; font-size:13px; margin-bottom:4px;"
+           onmouseover="this.style.background='var(--maroon-bg)'" onmouseout="this.style.background='var(--gray-50)'">
+        <strong>${s.last_name}, ${s.first_name}</strong>
+        <span style="color:var(--gray-500); font-size:12px; margin-left:6px;">${s.student_number}</span>
+      </div>
+    `).join('');
+  }, 300);
+}
+
+function selectEnrollStudent(id, name, meta) {
+  selectedEnrollStudentId = id;
+  document.getElementById('me-search').value = name;
+  document.getElementById('me-search-results').innerHTML = '';
+  document.getElementById('me-student-block').style.display = 'block';
+  document.getElementById('me-student-name').textContent = name;
+  document.getElementById('me-student-meta').textContent = meta;
+  document.getElementById('me-subjects-block').style.display = 'none';
+}
+
+async function loadStudentEnrollmentView() {
+  if (!selectedEnrollStudentId) return;
+  const sy  = document.getElementById('me-school_year').value.trim();
+  const sem = document.getElementById('me-semester').value;
+  if (!sy) { alert('Please enter a school year.'); return; }
+
+  // Current subjects
+  const resEnroll = await fetch(`${API}/api/students/${selectedEnrollStudentId}/enrollments`, { headers: authHeaders() });
+  const enrollments = await resEnroll.json();
+
+  const currentEl = document.getElementById('me-current-subjects');
+  const termEnroll = enrollments.filter(e => e.school_year === sy && String(e.semester) === String(sem));
+
+  if (!termEnroll.length) {
+    currentEl.innerHTML = '<div style="font-size:13px; color:var(--gray-500);">No subjects enrolled this term.</div>';
+  } else {
+    currentEl.innerHTML = termEnroll.map(e => `
+      <div class="subject-row">
+        <span class="subject-code">${e.code}</span>
+        <span class="subject-name">${e.name}</span>
+        <span class="subject-units">${e.units}u</span>
+        <span class="badge badge-gray">${e.status.replace(/_/g,' ')}</span>
+        <button class="btn-action danger" onclick="dropSubjectAdmin(${selectedEnrollStudentId}, ${e.subject_id || 'null'}, '${e.code}')">Drop</button>
+      </div>
+    `).join('');
+  }
+
+  // Available subjects to add
+  const resAvail = await fetch(`${API}/api/admin/students/${selectedEnrollStudentId}/available-subjects?school_year=${sy}&semester=${sem}`, { headers: authHeaders() });
+  const available = await resAvail.json();
+  const addSel = document.getElementById('me-add-subject');
+  addSel.innerHTML = '<option value="">Select subject to add…</option>';
+  available.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = `${s.code} — ${s.name} (${s.units}u)`;
+    addSel.appendChild(o);
+  });
+
+  document.getElementById('me-subjects-block').style.display = 'block';
+}
+
+async function addSubjectManually() {
+  const subject_id = document.getElementById('me-add-subject').value;
+  const school_year = document.getElementById('me-school_year').value.trim();
+  const semester = document.getElementById('me-semester').value;
+  if (!subject_id) { flash('me-error','Select a subject.','error'); return; }
+
+  const res = await fetch(`${API}/api/admin/students/${selectedEnrollStudentId}/enroll`, {
+    method:'POST', headers: authHeaders(),
+    body: JSON.stringify({ subject_id, school_year, semester })
+  });
+  const data = await res.json();
+  if (!res.ok) { flash('me-error', data.message, 'error'); return; }
+  flash('me-success', data.message);
+  loadStudentEnrollmentView();
+}
+
+async function dropSubjectAdmin(studentId, subjectId) {
+  if (!confirm('Drop this subject for the student?')) return;
+  const res = await fetch(`${API}/api/admin/students/${studentId}/enroll/${subjectId}`, {
+    method:'DELETE', headers: authHeaders()
+  });
+  const data = await res.json();
+  if (!res.ok) { alert(data.message); return; }
+  loadStudentEnrollmentView();
+}
+
+// ── NOTICES ───────────────────────────────────────
+let ntSearchTimer = null;
+
+function searchStudentForNotice(query) {
+  clearTimeout(ntSearchTimer);
+  if (query.length < 2) { document.getElementById('nt-student-results').innerHTML = ''; return; }
+  ntSearchTimer = setTimeout(async () => {
+    const res = await fetch(`${API}/api/students/search?query=${encodeURIComponent(query)}`, { headers: authHeaders() });
+    const students = await res.json();
+    const el = document.getElementById('nt-student-results');
+    if (!students.length) { el.innerHTML = '<div style="font-size:13px; color:var(--gray-500);">No results.</div>'; return; }
+    el.innerHTML = students.slice(0,5).map(s => `
+      <div onclick="selectNoticeStudent(${s.id},'${s.first_name} ${s.last_name}')"
+           style="padding:8px 12px; background:var(--gray-50); border-radius:4px; cursor:pointer; font-size:13px; margin-bottom:4px;"
+           onmouseover="this.style.background='var(--maroon-bg)'" onmouseout="this.style.background='var(--gray-50)'">
+        <strong>${s.last_name}, ${s.first_name}</strong>
+        <span style="color:var(--gray-500); font-size:12px; margin-left:6px;">${s.student_number}</span>
+      </div>
+    `).join('');
+  }, 300);
+}
+
+function selectNoticeStudent(id, name) {
+  document.getElementById('nt-student-id').value = id;
+  document.getElementById('nt-student-search').value = name;
+  document.getElementById('nt-student-results').innerHTML =
+    `<div style="padding:6px 10px; background:var(--maroon-bg); border-radius:4px; font-size:13px; margin-top:4px;">
+       Selected: <strong>${name}</strong>
+     </div>`;
+}
+
+async function sendNoticeToStudent() {
+  const student_id = document.getElementById('nt-student-id').value;
+  const message    = document.getElementById('nt-message').value.trim();
+  const type       = document.getElementById('nt-type').value;
+  if (!student_id) { flash('nt-error','Please select a student.','error'); return; }
+  if (!message)    { flash('nt-error','Please enter a message.','error'); return; }
+
+  const res = await fetch(`${API}/api/admin/notices/student`, {
+    method:'POST', headers: authHeaders(),
+    body: JSON.stringify({ student_id, message, type })
+  });
+  const data = await res.json();
+  if (!res.ok) { flash('nt-error', data.message, 'error'); return; }
+  flash('nt-success', data.message);
+  document.getElementById('nt-message').value = '';
+  loadNotices();
+}
+
+async function sendNoticeToTeacherStudents() {
+  const teacher_id = document.getElementById('nt-teacher-id').value;
+  const message    = document.getElementById('nt-teacher-message').value.trim();
+  if (!teacher_id) { flash('nt-t-error','Please select a teacher.','error'); return; }
+  if (!message)    { flash('nt-t-error','Please enter a message.','error'); return; }
+
+  const res = await fetch(`${API}/api/admin/notices/teacher-students`, {
+    method:'POST', headers: authHeaders(),
+    body: JSON.stringify({ teacher_id, message })
+  });
+  const data = await res.json();
+  if (!res.ok) { flash('nt-t-error', data.message, 'error'); return; }
+  flash('nt-t-success', data.message);
+  document.getElementById('nt-teacher-message').value = '';
+  loadNotices();
+}
+
+async function loadNotices() {
+  try {
+    const res = await fetch(`${API}/api/admin/notices`, { headers: authHeaders() });
+    const notices = await res.json();
+    const el = document.getElementById('noticeLog');
+    if (!notices.length) { el.innerHTML = '<div class="empty-state">No notices yet.</div>'; return; }
+    el.innerHTML = notices.map(n => `
+      <div style="padding:10px 16px; border-bottom:1px solid var(--gray-100); font-size:13px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>${n.last_name}, ${n.first_name}</strong>
+          <span style="font-size:11px; color:var(--gray-500);">${new Date(n.created_at).toLocaleDateString()}</span>
+        </div>
+        <div style="color:var(--gray-500); font-size:11px; text-transform:uppercase; letter-spacing:0.06em; margin:3px 0;">${n.type.replace(/_/g,' ')}</div>
+        <div>${n.message}</div>
+        ${!n.resolved ? `<button class="btn-action secondary" style="margin-top:6px; font-size:11px;" onclick="resolveNotice(${n.id}, this)">Mark Resolved</button>` : '<span style="font-size:11px; color:var(--success);">✓ Resolved</span>'}
+      </div>
+    `).join('');
+  } catch { document.getElementById('noticeLog').innerHTML = '<div class="empty-state">Could not load notices.</div>'; }
+}
+
+async function resolveNotice(noticeId, btn) {
+  btn.disabled = true;
+  const res = await fetch(`${API}/api/admin/notices/${noticeId}/resolve`, { method:'PATCH', headers: authHeaders() });
+  if (res.ok) loadNotices();
+}
+
+// ── ENROLLMENT SETTINGS ───────────────────────────
 async function loadEnrollmentStatus() {
   try {
     const res = await fetch(`${API}/api/students/enrollment-status`, { headers: authHeaders() });
     const data = await res.json();
     document.getElementById('enr-school_year').value = data.school_year || '';
     document.getElementById('enr-semester').value = data.semester || 1;
-    document.getElementById('enr-status').innerHTML = `
-      Enrollment is currently <strong style="color: ${data.is_open ? 'var(--success)' : 'var(--error)'}">
-      ${data.is_open ? 'OPEN' : 'CLOSED'}</strong> 
-      — ${data.school_year} Semester ${data.semester}
-    `;
-  } catch (err) {
-    console.error('Could not load enrollment status');
-  }
+    document.getElementById('enr-status').innerHTML =
+      `Enrollment is currently <strong style="color:${data.is_open ? 'var(--success)':'var(--error)'}">
+       ${data.is_open ? 'OPEN':'CLOSED'}</strong> — ${data.school_year} Semester ${data.semester}`;
+  } catch { console.error('Could not load enrollment status'); }
 }
 
 async function setEnrollment(is_open) {
-  const successEl = document.getElementById('enr-success');
-  const errorEl   = document.getElementById('enr-error');
-  successEl.style.display = 'none';
-  errorEl.style.display   = 'none';
-
   const school_year = document.getElementById('enr-school_year').value.trim();
   const semester    = document.getElementById('enr-semester').value;
-
-  if (!school_year) {
-    errorEl.textContent = 'Please enter a school year.';
-    errorEl.style.display = 'block';
-    return;
-  }
-
+  if (!school_year) { flash('enr-error','Please enter a school year.','error'); return; }
   try {
     const res = await fetch(`${API}/api/students/enrollment-settings`, {
-      method: 'PATCH',
-      headers: authHeaders(),
+      method:'PATCH', headers: authHeaders(),
       body: JSON.stringify({ is_open, school_year, semester })
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      errorEl.textContent = data.message || 'Failed to update settings.';
-      errorEl.style.display = 'block';
-      return;
-    }
-
-    successEl.textContent = data.message;
-    successEl.style.display = 'block';
+    if (!res.ok) { flash('enr-error', data.message || 'Failed.', 'error'); return; }
+    flash('enr-success', data.message);
     loadEnrollmentStatus();
-
-  } catch (err) {
-    errorEl.textContent = 'Cannot connect to server.';
-    errorEl.style.display = 'block';
-  }
+  } catch { flash('enr-error','Cannot connect to server.','error'); }
 }
 
-// ── INIT ───────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────
 if (!getToken() || localStorage.getItem('role') !== 'admin') {
   window.location.href = '/login.html';
 }
 
-document.getElementById('topbarUser').textContent = 'Admin — ' + (localStorage.getItem('role') || '');
+document.getElementById('topbarUser').textContent = 'Admin';
 loadStudents();
 loadDepartments();
 loadEnrollmentStatus();

@@ -41,6 +41,23 @@ if (type === 'shiftee') {
     return;
 }
 
+// Only auto-enroll freshmen (new students, year 1)
+if (type !== 'new' || parseInt(year_level) !== 1) {
+    const bcrypt = require('bcrypt');
+    bcrypt.hash(student_number, 10, (err, hash) => {
+        if (err) console.error(err);
+        const userSQL = `INSERT INTO users (username, password, role, student_id) VALUES (?, ?, 'student', ?)`;
+        db.query(userSQL, [student_number, hash, student_id], (err) => {
+            if (err) console.error(err);
+            res.status(201).json({
+                message: 'Student registered successfully. They will enroll through the enrollment period.',
+                student_id
+            });
+        });
+    });
+    return;
+}
+
 const curriculumSQL = `
     SELECT s.id as subject_id, s.units, s.code, s.name
     FROM curriculum c
@@ -134,12 +151,15 @@ router.get('/me', protect, restrictTo('student'), (req, res) => {
         const student = results[0];
 
         const enrollSQL = `
-            SELECT s.code, s.name, s.units, s.type, e.status, e.school_year, e.semester
-            FROM enrollments e
-            JOIN subjects s ON e.subject_id = s.id
-            WHERE e.student_id = ?
-            ORDER BY e.semester, s.code
-        `;
+    SELECT s.code, s.name, s.units, s.type, e.status, e.school_year, e.semester,
+           e.id as enrollment_id,
+           sec.section_code, sec.day, sec.time_start, sec.time_end, sec.room
+    FROM enrollments e
+    JOIN subjects s ON e.subject_id = s.id
+    LEFT JOIN sections sec ON e.section_id = sec.id
+    WHERE e.student_id = ?
+    ORDER BY e.semester, s.code
+`;
         db.query(enrollSQL, [student.id], (err, subjects) => {
             if (err) return res.status(500).json({ message: 'Database error', error: err });
 
@@ -176,7 +196,7 @@ router.get('/departments', protect, restrictTo('admin'), (req, res) => {
 });
 
 // Get student by ID or name (for business office search)
-router.get('/search', protect, restrictTo('business_office'), (req, res) => {
+router.get('/search', protect, restrictTo('business_office', 'teacher', 'admin'), (req, res) => {
     const { query } = req.query;
     if (!query) return res.status(400).json({ message: 'Search query required' });
 
@@ -217,10 +237,65 @@ router.get('/enrollment-status', protect, (req, res) => {
 // Toggle enrollment open/closed (admin only)
 router.patch('/enrollment-settings', protect, restrictTo('admin'), (req, res) => {
     const { is_open, school_year, semester } = req.body;
-    const sql = `UPDATE enrollment_settings SET is_open = ?, school_year = ?, semester = ? ORDER BY id DESC LIMIT 1`;
-    db.query(sql, [is_open, school_year, semester], (err) => {
+
+    // Get current settings first
+    db.query('SELECT * FROM enrollment_settings ORDER BY id DESC LIMIT 1', (err, current) => {
         if (err) return res.status(500).json({ message: 'Database error', error: err });
-        res.json({ message: `Enrollment ${is_open ? 'opened' : 'closed'} successfully.` });
+
+        const currentSettings = current[0];
+        const semesterChanged = currentSettings &&
+            (currentSettings.school_year !== school_year || currentSettings.semester !== parseInt(semester));
+
+        // Update settings
+        db.query(
+            'UPDATE enrollment_settings SET is_open = ?, school_year = ?, semester = ?, previous_school_year = ?, previous_semester = ? ORDER BY id DESC LIMIT 1',
+            [is_open, school_year, semester, currentSettings?.school_year, currentSettings?.semester],
+            (err) => {
+                if (err) return res.status(500).json({ message: 'Database error', error: err });
+
+                // If opening a NEW semester, advance all officially enrolled students
+                if (is_open && semesterChanged) {
+                    // Flip officially enrolled students to old, reset ok_to_enroll
+                    db.query(
+                        `UPDATE students SET type = 'old', ok_to_enroll = 0,
+                         current_semester = ?
+                         WHERE id IN (
+                             SELECT DISTINCT student_id FROM enrollments 
+                             WHERE status IN ('officially_enrolled', 'auto_enrolled')
+                         )`,
+                        [parseInt(semester)],
+                        (err) => {
+                            if (err) console.error('Error advancing students:', err);
+                        }
+                    );
+
+
+                    // Advance year level only when moving to a new school year (sem 2 → sem 1 new year)
+if (currentSettings && currentSettings.semester === 2 && parseInt(semester) === 1) {
+    db.query(
+        `UPDATE students SET year_level = year_level + 1, current_semester = 1
+         WHERE id IN (
+             SELECT DISTINCT student_id FROM enrollments 
+             WHERE status IN ('officially_enrolled', 'auto_enrolled')
+         )`,
+        () => {}
+    );
+}
+                    // Reset current_semester for students moving to new year
+                    db.query(
+                        `UPDATE students SET current_semester = 1 
+                         WHERE current_semester >= 2 
+                         AND id IN (
+                             SELECT DISTINCT student_id FROM enrollments 
+                             WHERE status = 'officially_enrolled'
+                         )`,
+                        () => {}
+                    );
+                }
+
+                res.json({ message: `Enrollment ${is_open ? 'opened' : 'closed'} successfully.${semesterChanged && is_open ? ' Students have been advanced to the new semester.' : ''}` });
+            }
+        );
     });
 });
 
@@ -260,19 +335,26 @@ router.post('/enroll-old', protect, restrictTo('student'), (req, res) => {
                     }
 
                     db.query(
-                        'SELECT subject_id, grade FROM grades WHERE student_id = ?',
-                        [student.id],
-                        (err, grades) => {
-                            if (err) return res.status(500).json({ message: 'Database error', error: err });
+    `SELECT g.subject_id, g.grade, s.type as subject_type
+     FROM grades g
+     JOIN subjects s ON g.subject_id = s.id
+     WHERE g.student_id = ?`,
+    [student.id],
+    (err, grades) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
 
-                            const passingThreshold = student.year_level >= 3 ? 1.8 : 2.0;
+        const passedSubjectIds = new Set();
+        const failedSubjectIds = new Set();
 
-                            const passedSubjectIds = new Set(
-                                grades.filter(g => g.grade >= passingThreshold).map(g => g.subject_id)
-                            );
-                            const failedSubjectIds = new Set(
-                                grades.filter(g => g.grade < passingThreshold).map(g => g.subject_id)
-                            );
+        grades.forEach(g => {
+            const isNonMajor = ['GE', 'PE', 'NSTP', 'drawing'].includes(g.subject_type);
+            const threshold = isNonMajor ? 1.0 : 2.0;
+            if (g.grade >= threshold) {
+                passedSubjectIds.add(g.subject_id);
+            } else {
+                failedSubjectIds.add(g.subject_id);
+            }
+        });
                             const isRegular = failedSubjectIds.size === 0;
 
                             db.query(
@@ -281,8 +363,8 @@ router.post('/enroll-old', protect, restrictTo('student'), (req, res) => {
                                 () => {}
                             );
 
-                            const nextSem = parseInt(semester) >= 2 ? 1 : parseInt(semester) + 1;
-                            const nextYear = parseInt(semester) >= 2 ? student.year_level + 1 : student.year_level;
+                                const nextSem = parseInt(semester);
+                                const nextYear = student.year_level;
 
                             db.query(
                                 `SELECT s.id as subject_id, s.code, s.name, s.units
@@ -304,17 +386,22 @@ router.post('/enroll-old', protect, restrictTo('student'), (req, res) => {
 
                                         const eligible = [];
                                         const notEligible = [];
-
+console.log('passedSubjectIds:', [...passedSubjectIds]);
+console.log('nextSubjects:', nextSubjects.map(s => s.code));
+console.log('prereqMap:', prereqMap);
                                         nextSubjects.forEach(sub => {
-                                            const prereqsNeeded = prereqMap[sub.subject_id] || [];
-                                            const meetsAllPrereqs = prereqsNeeded.every(pid => passedSubjectIds.has(pid));
+                                        
+                                            // Skip if student already passed this subject
+                                        if (passedSubjectIds.has(sub.subject_id)) return;
+
+                                        const prereqsNeeded = prereqMap[sub.subject_id] || [];
+                                        const meetsAllPrereqs = prereqsNeeded.every(pid => passedSubjectIds.has(pid));
                                             if (meetsAllPrereqs) {
                                                 eligible.push(sub);
                                             } else {
                                                 notEligible.push(sub);
                                             }
                                         });
-
                                         const toEnroll = [...eligible];
                                         if (!isRegular) {
                                             failedSubjectIds.forEach(fid => {
@@ -344,12 +431,15 @@ router.post('/enroll-old', protect, restrictTo('student'), (req, res) => {
                                             return res.json({ message: 'No eligible subjects found.', notices });
                                         }
 
-                                        const enrollValues = toEnroll.map(s => [student.id, s.subject_id, school_year, semester, 'auto_enrolled']);
+                                        const enrollValues = toEnroll.map(s => [student.id, s.subject_id, school_year, semester, 'pre_enlisted']);
                                         db.query(
                                             'INSERT INTO enrollments (student_id, subject_id, school_year, semester, status) VALUES ?',
-                                            [enrollValues],
-                                            (err) => {
-                                                if (err) return res.status(500).json({ message: 'Error enrolling subjects', error: err });
+                                                [enrollValues],
+                                                (err) => {
+                                                    if (err) {
+                                                        console.error('Enrollment insert error:', err);
+                                                        return res.status(500).json({ message: 'Error enrolling subjects', error: err });
+                                                    }
 
                                                 if (notices.length > 0) {
                                                     const noticeValues = notices.map(n => [student.id, n.type, n.message]);
@@ -375,6 +465,210 @@ router.post('/enroll-old', protect, restrictTo('student'), (req, res) => {
                 }
             );
         });
+    });
+});
+
+// Student submits subjects for advising
+router.post('/submit-advising', protect, restrictTo('student'), (req, res) => {
+    const userId = req.user.id;
+
+    const studentSQL = `SELECT s.* FROM students s JOIN users u ON u.student_id = s.id WHERE u.id = ?`;
+    db.query(studentSQL, [userId], (err, students) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
+        const student = students[0];
+
+        // Check enrollment is open
+        db.query('SELECT * FROM enrollment_settings ORDER BY id DESC LIMIT 1', (err, settings) => {
+            if (err) return res.status(500).json({ message: 'Database error', error: err });
+            if (!settings[0] || !settings[0].is_open) {
+                return res.status(403).json({ message: 'Enrollment is currently closed.' });
+            }
+
+            const { school_year, semester } = settings[0];
+
+            // Check if already submitted
+            db.query(
+                'SELECT id FROM advising_requests WHERE student_id = ? AND school_year = ? AND semester = ? AND status = "pending" LIMIT 1',
+                [student.id, school_year, semester],
+                (err, existing) => {
+                    if (err) return res.status(500).json({ message: 'Database error', error: err });
+                    if (existing.length > 0) {
+                        return res.status(400).json({ message: 'You have already submitted for advising.' });
+                    }
+
+                    // Get student's department teacher
+                    db.query(
+                        'SELECT id FROM teachers WHERE department_id = ? LIMIT 1',
+                        [student.department_id],
+                        (err, teachers) => {
+                            if (err) return res.status(500).json({ message: 'Database error', error: err });
+                            const teacher_id = teachers.length > 0 ? teachers[0].id : null;
+
+                            // Create advising request
+                            db.query(
+                                'INSERT INTO advising_requests (student_id, teacher_id, school_year, semester) VALUES (?, ?, ?, ?)',
+                                [student.id, teacher_id, school_year, semester],
+                                (err) => {
+                                    if (err) return res.status(500).json({ message: 'Database error', error: err });
+
+                                    // Update enrollment status to submitted_for_advising
+                                    db.query(
+                                        'UPDATE enrollments SET status = "submitted_for_advising" WHERE student_id = ? AND school_year = ? AND semester = ? AND status = "pre_enlisted"',
+                                        [student.id, school_year, semester],
+                                        (err) => {
+                                            if (err) return res.status(500).json({ message: 'Database error', error: err });
+                                            res.json({ message: 'Subjects submitted for advising successfully. Please wait for your advisor to review.' });
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        });
+    });
+});
+
+// Get all GEs with no prerequisites (for student GE selection)
+router.get('/ge-subjects', protect, restrictTo('student'), (req, res) => {
+    const studentSQL = `SELECT s.id FROM students s JOIN users u ON u.student_id = s.id WHERE u.id = ?`;
+    db.query(studentSQL, [req.user.id], (err, students) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
+        const student = students[0];
+
+        const sql = `
+            SELECT s.id, s.code, s.name, s.units
+            FROM subjects s
+            WHERE s.type = 'GE'
+            AND s.code NOT LIKE 'CHS%'
+            AND s.id NOT IN (SELECT subject_id FROM prerequisites)
+            AND s.id NOT IN (
+                SELECT subject_id FROM grades 
+                WHERE student_id = ? AND passed = 1
+            )
+            AND s.id NOT IN (
+                SELECT subject_id FROM enrollments
+                WHERE student_id = ?
+            )
+            ORDER BY s.code
+        `;
+        db.query(sql, [student.id, student.id], (err, results) => {
+            if (err) return res.status(500).json({ message: 'Database error', error: err });
+            res.json(results);
+        });
+    });
+});
+// Add a GE subject to student's pre-enlisted subjects
+router.post('/add-ge', protect, restrictTo('student'), (req, res) => {
+    const userId = req.user.id;
+    const { subject_id } = req.body;
+
+    const studentSQL = `SELECT s.* FROM students s JOIN users u ON u.student_id = s.id WHERE u.id = ?`;
+    db.query(studentSQL, [userId], (err, students) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
+        const student = students[0];
+
+        db.query('SELECT * FROM enrollment_settings ORDER BY id DESC LIMIT 1', (err, settings) => {
+            if (err) return res.status(500).json({ message: 'Database error', error: err });
+            if (!settings[0] || !settings[0].is_open) {
+                return res.status(403).json({ message: 'Enrollment is currently closed.' });
+            }
+
+            const { school_year, semester } = settings[0];
+
+            // Check if already enlisted
+            db.query(
+                'SELECT id FROM enrollments WHERE student_id = ? AND subject_id = ? AND school_year = ? AND semester = ?',
+                [student.id, subject_id, school_year, semester],
+                (err, existing) => {
+                    if (err) return res.status(500).json({ message: 'Database error', error: err });
+                    if (existing.length > 0) {
+                        return res.status(400).json({ message: 'Subject already added.' });
+                    }
+
+                    // Check if student already passed this subject
+                    db.query(
+                        'SELECT id FROM grades WHERE student_id = ? AND subject_id = ? AND passed = 1',
+                        [student.id, subject_id],
+                        (err, passed) => {
+                            if (err) return res.status(500).json({ message: 'Database error', error: err });
+                            if (passed.length > 0) {
+                                return res.status(400).json({ message: 'You have already passed this subject.' });
+                            }
+
+                            db.query(
+                                'INSERT INTO enrollments (student_id, subject_id, school_year, semester, status) VALUES (?, ?, ?, ?, "pre_enlisted")',
+                                [student.id, subject_id, school_year, semester],
+                                (err) => {
+                                    if (err) return res.status(500).json({ message: 'Database error', error: err });
+                                    res.json({ message: 'GE subject added successfully.' });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        });
+    });
+});
+
+// Remove a pre-enlisted subject
+router.delete('/remove-subject/:enrollment_id', protect, restrictTo('student'), (req, res) => {
+    const userId = req.user.id;
+
+    const studentSQL = `SELECT s.id FROM students s JOIN users u ON u.student_id = s.id WHERE u.id = ?`;
+    db.query(studentSQL, [userId], (err, students) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
+        const student = students[0];
+
+        db.query(
+            'DELETE FROM enrollments WHERE id = ? AND student_id = ? AND status = "pre_enlisted"',
+            [req.params.enrollment_id, student.id],
+            (err, result) => {
+                if (err) return res.status(500).json({ message: 'Database error', error: err });
+                if (result.affectedRows === 0) {
+                    return res.status(400).json({ message: 'Cannot remove this subject. It may already be submitted for advising.' });
+                }
+                res.json({ message: 'Subject removed.' });
+            }
+        );
+    });
+});
+
+// Student views their own grade history
+router.get('/my-grades', protect, restrictTo('student'), (req, res) => {
+    const studentSQL = `SELECT s.id FROM students s JOIN users u ON u.student_id = s.id WHERE u.id = ?`;
+    db.query(studentSQL, [req.user.id], (err, students) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
+        const student = students[0];
+
+        const sql = `
+            SELECT g.grade, g.passed, g.school_year, g.semester,
+                   s.code, s.name, s.units
+            FROM grades g
+            JOIN subjects s ON g.subject_id = s.id
+            WHERE g.student_id = ?
+            ORDER BY g.school_year, g.semester, s.code
+        `;
+        db.query(sql, [student.id], (err, results) => {
+            if (err) return res.status(500).json({ message: 'Database error', error: err });
+            res.json(results);
+        });
+    });
+});
+
+// Get faculty contacts
+router.get('/contacts', protect, restrictTo('student'), (req, res) => {
+    const sql = `
+        SELECT f.name, f.role, f.email, f.phone, d.name as department_name
+        FROM faculty_contacts f
+        LEFT JOIN departments d ON f.department_id = d.id
+        ORDER BY f.role, f.name
+    `;
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ message: 'Database error', error: err });
+        res.json(results);
     });
 });
 module.exports = router;

@@ -12,6 +12,9 @@ router.post('/login', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE username = ?';
+
+
+
     db.query(sql, [username], async (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'Database error', error: err });
@@ -21,7 +24,12 @@ router.post('/login', (req, res) => {
         }   
 
         const user = results[0];
+
+        console.log('Password typed:', password);
+        console.log('Password in DB:', user.password);
         const passwordMatch = bcrypt.compareSync(password, user.password);
+        console.log('Password match:', passwordMatch);
+        
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid username or password' });
         } 
