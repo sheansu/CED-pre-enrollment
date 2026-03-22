@@ -521,3 +521,51 @@ INSERT INTO faculty_contacts (name, role, department_id, email, phone) VALUES
     ('Engr. Klint Ian Austero',   'Dean, CED',              NULL, 'kiaustero@silliman.edu',   '(035) 422-6002 loc 100'),
     ('Engr. Johnson B. Diputado', 'Program Chair, CpE',     1,    'jbdiputado@silliman.edu',  '(035) 422-6002 loc 101'),
     ('Ms. Anie Escarillo',        'Secretariat, CED',       NULL, 'aescarillo@silliman.edu',  '(035) 422-6002 loc 103');
+
+-- ============================================================
+--  VERIFYING STUFF ONLY AHAHAHHA
+-- ============================================================
+SHOW TABLES;
+SELECT COUNT(*) AS total_subjects   FROM subjects;
+SELECT COUNT(*) AS total_curriculum FROM curriculum;
+SELECT COUNT(*) AS total_prereqs    FROM prerequisites;
+
+SELECT * FROM students;
+SELECT * FROM users;
+SELECT * FROM enrollment_settings;
+
+ALTER TABLE students MODIFY COLUMN type ENUM('new', 'old', 'shiftee') NOT NULL DEFAULT 'new';
+
+SHOW COLUMNS FROM students LIKE 'type';
+
+ALTER TABLE users MODIFY COLUMN role 
+ENUM('student','admin','business_office','teacher') NOT NULL;
+
+UPDATE users SET password = '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE username = 'admin';
+UPDATE users SET password = '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE username = 'busoff';
+
+INSERT INTO users (username, password, role) VALUES 
+('teacher1', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'teacher');
+INSERT INTO teachers (user_id, first_name, last_name, email, department_id)
+VALUES (LAST_INSERT_ID(), 'Kar', 'Baring', 'karizzaabaring@su.edu.ph', 1);
+
+INSERT INTO teacher_subjects (teacher_id, subject_id)
+SELECT 1, id FROM subjects WHERE code IN ('EM 11', 'EM 13', 'CpE 1', 'CpE 11', 'GE 1', 'GE 2', 'GE 7', 'GE 9', 'PE 1', 'NSTP 1', 'PEP 1');
+
+ALTER TABLE enrollments MODIFY COLUMN status 
+ENUM('auto_enrolled','manually_added','dropped','conflict_removed','pre_enlisted','submitted_for_advising','officially_enrolled') 
+NOT NULL DEFAULT 'auto_enrolled';
+
+ALTER TABLE enrollments ADD COLUMN section_id INT DEFAULT NULL;
+ALTER TABLE enrollments ADD FOREIGN KEY (section_id) REFERENCES sections(id);
+
+SHOW COLUMNS FROM enrollments LIKE 'status';
+
+ALTER TABLE students ADD COLUMN current_semester TINYINT NOT NULL DEFAULT 1;
+
+SELECT g.grade, g.passed, s.code, s.type FROM grades g JOIN subjects s ON g.subject_id = s.id WHERE g.student_id = 1;
+
+ALTER TABLE enrollment_settings ADD COLUMN previous_school_year VARCHAR(10) DEFAULT NULL;
+ALTER TABLE enrollment_settings ADD COLUMN previous_semester TINYINT DEFAULT NULL;
+
+SELECT id, student_number, first_name, last_name, type, year_level, ok_to_enroll, current_semester FROM students;
