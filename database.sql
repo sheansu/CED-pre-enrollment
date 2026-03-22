@@ -534,7 +534,7 @@ SELECT * FROM students;
 SELECT * FROM users;
 SELECT * FROM enrollment_settings;
 
-ALTER TABLE students MODIFY COLUMN type ENUM('new', 'old', 'shiftee') NOT NULL DEFAULT 'new';
+ALTER TABLE students MODIFY COLUMN type ENUM('new', 'returning', 'shiftee') NOT NULL DEFAULT 'new';
 
 SHOW COLUMNS FROM students LIKE 'type';
 

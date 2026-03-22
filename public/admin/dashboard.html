@@ -510,13 +510,26 @@
               <option value="4">4th Year</option>
             </select>
           </div>
+          <div class="form-group">
+            <label>School Year</label>
+            <input type="text" id="reg-school_year" placeholder="e.g. 2026-2027"/>
+          </div>
+          <div class="form-group">
+            <label>Semester</label>
+            <select id="reg-semester">
+              <option value="1">1st Semester</option>
+              <option value="2">2nd Semester</option>
+              <option value="3">Summer</option>
+            </select>
+          </div>
+
           <div class="form-group" id="type-group" style="display:none;">
           <label>Student Type</label>
           <select id="reg-type">
           <option value="">Select type...</option>
           <option value="shiftee">Shiftee</option>
           </select>
-          </div>
+          </div>  
         </div>
         <div class="form-actions">
           <button class="btn-primary" id="registerBtn" onclick="registerStudent()">Register & Auto-Enroll</button>
@@ -1128,7 +1141,10 @@ async function loadDepartments() {
 }
 
 async function registerStudent() {
-  const btn = document.getElementById('registerBtn');
+  const btn        = document.getElementById('registerBtn');
+  const yearLevel  = document.getElementById('reg-year_level').value;
+  const typeVal    = yearLevel === '1' ? 'new' : document.getElementById('reg-type').value;
+
   const body = {
     student_number: document.getElementById('reg-student_number').value.trim(),
     first_name:     document.getElementById('reg-first_name').value.trim(),
@@ -1136,28 +1152,57 @@ async function registerStudent() {
     age:            document.getElementById('reg-age').value,
     address:        document.getElementById('reg-address').value.trim(),
     department_id:  document.getElementById('reg-department_id').value,
-    course: document.getElementById('reg-department_id').options[document.getElementById('reg-department_id').selectedIndex]?.text.split('—')[1]?.trim() || '',
-    year_level: document.getElementById('reg-year_level').value,
-    type: document.getElementById('reg-year_level').value === '1'
-            ? 'new'
-            : document.getElementById('reg-type').value,
+    course:         document.getElementById('reg-department_id').options[
+                      document.getElementById('reg-department_id').selectedIndex
+                    ]?.text.split('—')[1]?.trim() || '',
+    year_level:     yearLevel,
+    type:           typeVal,
+    school_year:    document.getElementById('reg-school_year').value.trim(),
+    semester:       document.getElementById('reg-semester').value,
   };
 
-  if (Object.values(body).some(v => !v)) {
-    flash('reg-error','Please fill in all fields.','error');
+  // Validate required fields (type is auto-set for year 1, so check separately)
+  const required = ['student_number','first_name','last_name','age','address','department_id','course','year_level','school_year','semester'];
+  const missing  = required.filter(k => !body[k]);
+  if (missing.length) {
+    flash('reg-error', `Please fill in: ${missing.join(', ')}`, 'error');
+    return;
+  }
+  if (!body.type) {
+    flash('reg-error', 'Please select a student type (Shiftee) for non-first year students.', 'error');
     return;
   }
 
+  console.log('[registerStudent] sending:', body);
+
   btn.disabled = true; btn.textContent = 'Registering…';
   try {
-    const res = await fetch(`${API}/api/students/new`, { method:'POST', headers: authHeaders(), body: JSON.stringify(body) });
+    const res  = await fetch(`${API}/api/students/new`, { method:'POST', headers: authHeaders(), body: JSON.stringify(body) });
     const data = await res.json();
-    if (!res.ok) { flash('reg-error', data.message || 'Registration failed.', 'error'); return; }
-    flash('reg-success', `${body.first_name} ${body.last_name} registered! Auto-enrolled in ${data.enrolled_subjects?.length || 0} subjects.`);
+
+    console.log('[registerStudent] response:', res.status, data);
+
+    if (!res.ok) {
+      flash('reg-error', data.message || 'Registration failed.', 'error');
+      return;
+    }
+
+    const count = data.enrolled_subjects?.length || 0;
+    const msg   = count > 0
+      ? `${body.first_name} ${body.last_name} registered and auto-enrolled in ${count} subjects for ${data.school_year} Sem ${data.semester}.`
+      : `${body.first_name} ${body.last_name} registered. ${data.message}`;
+
+    flash('reg-success', msg);
     document.querySelectorAll('#panel-register input, #panel-register select').forEach(el => el.value = '');
+    document.getElementById('type-group').style.display = 'none';
     loadStudents();
-  } catch { flash('reg-error','Cannot connect to server.','error'); }
-  finally { btn.disabled = false; btn.textContent = 'Register & Auto-Enroll'; }
+  } catch (err) {
+    console.error('[registerStudent] fetch error:', err);
+    flash('reg-error', 'Cannot connect to server.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Register & Auto-Enroll';
+  }
 }
 
 // ── GRADES TABLE ─────────────────────────────────
